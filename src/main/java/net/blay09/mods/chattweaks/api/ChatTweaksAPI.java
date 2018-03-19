@@ -1,19 +1,18 @@
-package net.blay09.mods.chattweaks;
+package net.blay09.mods.chattweaks.api;
 
-import net.blay09.mods.chattweaks.chat.emotes.EmoteRegistry;
-import net.blay09.mods.chattweaks.chat.emotes.IEmote;
-import net.blay09.mods.chattweaks.chat.emotes.IEmoteGroup;
-import net.blay09.mods.chattweaks.chat.emotes.IEmoteLoader;
-import net.blay09.mods.chattweaks.image.renderable.IChatRenderable;
-import net.blay09.mods.chattweaks.image.renderable.ImageLoader;
-
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.function.Function;
+import net.blay09.mods.chattweaks.LiteModChatTweaks;
+import net.blay09.mods.chattweaks.chat.emotes.EmoteRegistry;
+import net.blay09.mods.chattweaks.chat.emotes.IEmote;
+import net.blay09.mods.chattweaks.chat.emotes.IEmoteGroup;
+import net.blay09.mods.chattweaks.chat.emotes.IEmoteLoader;
+import net.blay09.mods.chattweaks.image.renderable.IChatRenderable;
+import net.blay09.mods.chattweaks.image.renderable.ImageLoader;
 
 public class ChatTweaksAPI {
 
@@ -48,7 +47,7 @@ public class ChatTweaksAPI {
 	}
 
 	public static void registerImageURLTransformer(Function<String, String> urlTransformer) {
-		ChatTweaks.registerImageURLTransformer(urlTransformer);
+		LiteModChatTweaks.registerImageURLTransformer(urlTransformer);
 	}
 
 	private static boolean loadEmoteImageFromCache(IEmote emote) {

@@ -1,18 +1,22 @@
 package net.blay09.mods.chattweaks.gui.chat;
 
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 import net.blay09.mods.chattweaks.ChatManager;
-import net.blay09.mods.chattweaks.ChatTweaks;
-import net.blay09.mods.chattweaks.ChatTweaksConfig;
 import net.blay09.mods.chattweaks.ChatViewManager;
+import net.blay09.mods.chattweaks.LiteModChatTweaks;
 import net.blay09.mods.chattweaks.chat.ChatChannel;
-import net.blay09.mods.chattweaks.chat.ChatView;
 import net.blay09.mods.chattweaks.chat.ChatMessage;
+import net.blay09.mods.chattweaks.chat.ChatView;
 import net.blay09.mods.chattweaks.chat.MessageStyle;
 import net.blay09.mods.chattweaks.chat.TextRenderRegion;
 import net.blay09.mods.chattweaks.chat.emotes.EmoteRegistry;
-import net.blay09.mods.chattweaks.event.PrintChatMessageEvent;
+import net.blay09.mods.chattweaks.config.Configs;
 import net.blay09.mods.chattweaks.image.ChatImage;
+import net.blay09.mods.chattweaks.mixin.IMixinGuiNewChat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiNewChat;
@@ -23,12 +27,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.common.MinecraftForge;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class GuiNewChatExt extends GuiNewChat {
 
@@ -65,7 +63,6 @@ public class GuiNewChatExt extends GuiNewChat {
 		super(mc);
 		this.mc = mc;
 		this.fontRenderer = mc.fontRenderer;
-		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	@Override
@@ -86,7 +83,8 @@ public class GuiNewChatExt extends GuiNewChat {
 	}
 
 	private void addChatMessageForDisplay(ChatMessage chatMessage, ChatView view) {
-		MinecraftForge.EVENT_BUS.post(new PrintChatMessageEvent(chatMessage, view));
+		// TODO LiteLoader port
+		//MinecraftForge.EVENT_BUS.post(new PrintChatMessageEvent(chatMessage, view));
 		switch (view.getMessageStyle()) {
 			case Chat:
 				if (view != ChatViewManager.getActiveView()) {
@@ -99,8 +97,8 @@ public class GuiNewChatExt extends GuiNewChat {
 				int colorIndex = -1;
 				int emoteIndex = 0;
 				for (ITextComponent chatLine : wrappedList) {
-					if (isChatOpen && this.scrollPos > 0) {
-						this.isScrolled = true;
+					if (isChatOpen && this.getScrollPos() > 0) {
+						this.setIsScrolled(true);
 						this.scroll(1);
 					}
 					String formattedText = chatLine.getFormattedText();
@@ -141,14 +139,15 @@ public class GuiNewChatExt extends GuiNewChat {
 				break;
 			case Side:
 				if(!view.isMuted()) {
-					ChatTweaks.getSideChatHandler().addMessage(chatMessage);
+					LiteModChatTweaks.getSideChatHandler().addMessage(chatMessage);
 				}
 				break;
 			case Bottom:
 				if(!view.isMuted()) {
-					ChatTweaks.getBottomChatHandler().setMessage(chatMessage);
+					LiteModChatTweaks.getBottomChatHandler().setMessage(chatMessage);
 				}
 				break;
+			default:
 		}
 	}
 
@@ -182,7 +181,7 @@ public class GuiNewChatExt extends GuiNewChat {
 		EmoteRegistry.runDisposal();
 		boolean isChatOpen = this.getChatOpen();
 		if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
-			int lineSpacing = ChatTweaksConfig.lineSpacing;
+			int lineSpacing = Configs.Generic.LINE_SPACING.getIntegerValue();
 			float chatOpacity = this.mc.gameSettings.chatOpacity * 0.9f + 0.1f;
 			int wrappedChatLinesCount = wrappedChatLines.size();
 			if (wrappedChatLinesCount > 0) {
@@ -194,8 +193,8 @@ public class GuiNewChatExt extends GuiNewChat {
 
 				int maxVisibleLines = this.getLineCount();
 				int drawnLinesCount = 0;
-				for (int lineIdx = 0; lineIdx + this.scrollPos < this.wrappedChatLines.size() && lineIdx < maxVisibleLines; lineIdx++) {
-					WrappedChatLine chatLine = this.wrappedChatLines.get(lineIdx + this.scrollPos);
+				for (int lineIdx = 0; lineIdx + this.getScrollPos() < this.wrappedChatLines.size() && lineIdx < maxVisibleLines; lineIdx++) {
+					WrappedChatLine chatLine = this.wrappedChatLines.get(lineIdx + this.getScrollPos());
 					int lifeTime = updateCounter - chatLine.timeCreated;
 					if (lifeTime < 200 || isChatOpen) {
 						int alpha = 255;
@@ -212,11 +211,17 @@ public class GuiNewChatExt extends GuiNewChat {
 							if (chatLine.message.hasBackgroundColor()) {
 								drawRect(-2, y - fontRenderer.FONT_HEIGHT + lineSpacing / 2, chatWidth + 4, y + (int) Math.ceil((float) lineSpacing / 2f), (chatLine.message.getBackgroundColor() & 0x00FFFFFF) + ((scaledAlpha / 2) << 24));
 							} else {
-								drawRect(-2, y - fontRenderer.FONT_HEIGHT - lineSpacing / 2, chatWidth + 4, y + (int) Math.ceil((float) lineSpacing / 2f), (((!ChatTweaksConfig.alternateBackground || !chatLine.alternateBackground) ? ChatTweaksConfig.backgroundColor1 : ChatTweaksConfig.backgroundColor2) & 0x00FFFFFF) + ((scaledAlpha / 2) << 24));
+								int color;
+								if (! Configs.Generic.ALTERNATE_BACKGROUND.getBooleanValue() || ! chatLine.alternateBackground) {
+									color = Configs.Theme.BG_COLOR_1.getIntegerValue();
+								} else {
+									color = Configs.Theme.BG_COLOR_2.getIntegerValue();
+								}
+								drawRect(-2, y - fontRenderer.FONT_HEIGHT - lineSpacing / 2, chatWidth + 4, y + (int) Math.ceil((float) lineSpacing / 2f), (color & 0x00FFFFFF) + ((scaledAlpha / 2) << 24));
 							}
 							GlStateManager.enableBlend();
 							for (TextRenderRegion region : chatLine.regions) {
-								x = fontRenderer.drawString(region.getText(), x, y - fontRenderer.FONT_HEIGHT + 1, (region.getColor() & 0x00FFFFFF) + (((ChatTweaksConfig.chatTextOpacity) ? alpha : scaledAlpha) << 24), true);
+								x = fontRenderer.drawString(region.getText(), x, y - fontRenderer.FONT_HEIGHT + 1, (region.getColor() & 0x00FFFFFF) + (((Configs.Generic.CHAT_TEXT_OPACITY.getBooleanValue()) ? alpha : scaledAlpha) << 24), true);
 							}
 							if (chatLine.images != null) {
 								for (ChatImage image : chatLine.images) {
@@ -245,11 +250,11 @@ public class GuiNewChatExt extends GuiNewChat {
 					GlStateManager.translate(-3f, 0f, 0f);
 					int fullHeight = wrappedChatLinesCount * fontRenderer.FONT_HEIGHT + wrappedChatLinesCount;
 					int drawnHeight = drawnLinesCount * fontRenderer.FONT_HEIGHT + drawnLinesCount;
-					int scrollY = this.scrollPos * drawnHeight / wrappedChatLinesCount;
+					int scrollY = this.getScrollPos() * drawnHeight / wrappedChatLinesCount;
 					int scrollHeight = drawnHeight * drawnHeight / fullHeight;
 					if (fullHeight != drawnHeight) {
 						int alpha = scrollY > 0 ? 0xAA : 0x60;
-						int color = this.isScrolled ? 0xCC3333 : 0x3333AA;
+						int color = this.isScrolled() ? 0xCC3333 : 0x3333AA;
 						drawRect(0, -scrollY, 2, -scrollY - scrollHeight, color + (alpha << 24));
 						drawRect(2, -scrollY, 1, -scrollY - scrollHeight, 0xCCCCCC + (alpha << 24));
 					}
@@ -259,7 +264,7 @@ public class GuiNewChatExt extends GuiNewChat {
 			}
 		}
 
-		if(!isChatOpen && ChatTweaksConfig.showNewMessageOverlay && ChatViewManager.getViews().size() > 1) {
+		if (! isChatOpen && Configs.Generic.SHOW_NEW_MESSAGE_OVERLAY.getBooleanValue() && ChatViewManager.getViews().size() > 1) {
 			int x = 2;
 			int y = 24;
 			for (ChatView chatView : ChatViewManager.getViews()) {
@@ -289,8 +294,9 @@ public class GuiNewChatExt extends GuiNewChat {
 		y = MathHelper.floor((float) y / chatScale);
 		if (x >= 0 && y >= 0) {
 			int lineCount = Math.min(this.getLineCount(), this.wrappedChatLines.size());
-			if (x <= MathHelper.floor((float) this.getChatWidth() / this.getChatScale()) && y < (fontRenderer.FONT_HEIGHT + ChatTweaksConfig.lineSpacing) * lineCount + lineCount) {
-				int clickedIndex = y / (fontRenderer.FONT_HEIGHT + ChatTweaksConfig.lineSpacing) + this.scrollPos;
+			int lineSpacing = Configs.Generic.LINE_SPACING.getIntegerValue();
+			if (x <= MathHelper.floor((float) this.getChatWidth() / this.getChatScale()) && y < (fontRenderer.FONT_HEIGHT + lineSpacing) * lineCount + lineCount) {
+				int clickedIndex = y / (fontRenderer.FONT_HEIGHT + lineSpacing) + this.getScrollPos();
 				if (clickedIndex >= 0 && clickedIndex < this.wrappedChatLines.size()) {
 					WrappedChatLine chatLine = this.wrappedChatLines.get(clickedIndex);
 					int width = 0;
@@ -310,9 +316,26 @@ public class GuiNewChatExt extends GuiNewChat {
 
 	@Override
 	public void scroll(int amount) {
-		scrollPos = Math.max(Math.min(scrollPos + amount, wrappedChatLines.size() - getLineCount()), 0);
-		if(scrollPos == 0) {
-			isScrolled = false;
+		this.setScrollPos(Math.max(Math.min(this.getScrollPos() + amount, wrappedChatLines.size() - getLineCount()), 0));
+
+		if (this.getScrollPos() == 0) {
+			this.setIsScrolled(false);
 		}
+	}
+
+	private boolean isScrolled() {
+		return ((IMixinGuiNewChat) (Object) this).getIsScrolled();
+	}
+
+	private void setIsScrolled(boolean isScrolled) {
+		((IMixinGuiNewChat) (Object) this).setIsScrolled(isScrolled);
+	}
+
+	private int getScrollPos() {
+		return ((IMixinGuiNewChat) (Object) this).getScrollPos();
+	}
+
+	private void setScrollPos(int scrollPos) {
+		((IMixinGuiNewChat) (Object) this).setScrollPos(scrollPos);
 	}
 }

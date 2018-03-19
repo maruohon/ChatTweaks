@@ -1,20 +1,19 @@
 package net.blay09.mods.chattweaks.chat.emotes.twitch;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import net.blay09.mods.chattweaks.ChatTweaks;
-import net.blay09.mods.chattweaks.ChatTweaksAPI;
-import net.blay09.mods.chattweaks.chat.emotes.IEmote;
-import net.blay09.mods.chattweaks.chat.emotes.IEmoteGroup;
-import net.blay09.mods.chattweaks.chat.emotes.IEmoteLoader;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.TextFormatting;
-
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import net.blay09.mods.chattweaks.api.ChatTweaksAPI;
+import net.blay09.mods.chattweaks.chat.emotes.IEmote;
+import net.blay09.mods.chattweaks.chat.emotes.IEmoteGroup;
+import net.blay09.mods.chattweaks.chat.emotes.IEmoteLoader;
+import net.blay09.mods.chattweaks.reference.Reference;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TextFormatting;
 
 public class FFZChannelEmotes implements IEmoteLoader {
 
@@ -38,7 +37,7 @@ public class FFZChannelEmotes implements IEmoteLoader {
 				String code = emoticonObject.get("name").getAsString();
 				IEmote emote = ChatTweaksAPI.registerEmote(code, this);
 				emote.setCustomData(emoticonObject.getAsJsonObject("urls").get("1").getAsString());
-				emote.addTooltip(TextFormatting.GRAY + I18n.format(ChatTweaks.MOD_ID + ":gui.chat.tooltipEmoteChannel") + " " + displayName);
+				emote.addTooltip(TextFormatting.GRAY + I18n.format(Reference.MOD_ID + ":gui.chat.tooltipEmoteChannel") + " " + displayName);
 				emote.setImageCacheFile("ffz-" + emoticonObject.get("id").getAsString());
 				group.addEmote(emote);
 			}

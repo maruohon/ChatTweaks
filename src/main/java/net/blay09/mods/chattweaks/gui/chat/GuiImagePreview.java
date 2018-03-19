@@ -1,7 +1,15 @@
 package net.blay09.mods.chattweaks.gui.chat;
 
-import net.blay09.mods.chattweaks.ChatTweaks;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import org.lwjgl.opengl.GL11;
+import net.blay09.mods.chattweaks.LiteModChatTweaks;
 import net.blay09.mods.chattweaks.balyware.BlayCommon;
+import net.blay09.mods.chattweaks.reference.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -11,14 +19,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
-import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 public class GuiImagePreview extends GuiScreen {
 
@@ -47,14 +47,14 @@ public class GuiImagePreview extends GuiScreen {
 				try {
 					loadBuffer = ImageIO.read(directURL);
 				} catch (IOException e) {
-					ChatTweaks.logger.error("An error occurred trying to load the image preview: ", e);
+					LiteModChatTweaks.logger.error("An error occurred trying to load the image preview: ", e);
 				}
 			}).start();
 		}
 
-		buttonList.add(new GuiButton(0, width / 2 - 150, height / 2 + 65, 90, 20, I18n.format(ChatTweaks.MOD_ID + ":gui.imagePreview.openInBrowser")));
-		buttonList.add(new GuiButton(1, width / 2 - 50, height / 2 + 65, 100, 20, I18n.format(ChatTweaks.MOD_ID + ":gui.imagePreview.copyToClipboard")));
-		buttonList.add(new GuiButton(2, width / 2 + 60, height / 2 + 65, 90, 20, I18n.format(ChatTweaks.MOD_ID + ":gui.imagePreview.close")));
+		buttonList.add(new GuiButton(0, width / 2 - 150, height / 2 + 65, 90, 20, I18n.format(Reference.MOD_ID + ":gui.imagePreview.openInBrowser")));
+		buttonList.add(new GuiButton(1, width / 2 - 50, height / 2 + 65, 100, 20, I18n.format(Reference.MOD_ID + ":gui.imagePreview.copyToClipboard")));
+		buttonList.add(new GuiButton(2, width / 2 + 60, height / 2 + 65, 90, 20, I18n.format(Reference.MOD_ID + ":gui.imagePreview.close")));
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class GuiImagePreview extends GuiScreen {
 				try {
 					BlayCommon.openWebLink(url.toURI());
 				} catch (URISyntaxException e) {
-					ChatTweaks.logger.error("An error occurred trying to open the link: ", e);
+					LiteModChatTweaks.logger.error("An error occurred trying to open the link: ", e);
 				}
 				Minecraft.getMinecraft().displayGuiScreen(parentScreen);
 				break;
@@ -90,7 +90,7 @@ public class GuiImagePreview extends GuiScreen {
 			loadBuffer = null;
 		}
 		if(textureId == -1) {
-			drawCenteredString(fontRenderer, I18n.format(ChatTweaks.MOD_ID + ":gui.imagePreview.loadingPreview"), width / 2, height / 2 - 20, 0xFFFFFFFF);
+			drawCenteredString(fontRenderer, I18n.format(Reference.MOD_ID + ":gui.imagePreview.loadingPreview"), width / 2, height / 2 - 20, 0xFFFFFFFF);
 		} else {
 			float renderWidth = textureWidth;
 			float renderHeight = textureHeight;

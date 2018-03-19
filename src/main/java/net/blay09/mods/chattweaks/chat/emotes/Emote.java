@@ -1,18 +1,17 @@
 package net.blay09.mods.chattweaks.chat.emotes;
 
-import com.google.common.collect.Lists;
-import net.blay09.mods.chattweaks.ChatTweaks;
-import net.blay09.mods.chattweaks.image.renderable.IChatRenderable;
-import net.blay09.mods.chattweaks.image.renderable.NullRenderable;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.TextFormatting;
-
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
+import com.google.common.collect.Lists;
+import net.blay09.mods.chattweaks.image.renderable.IChatRenderable;
+import net.blay09.mods.chattweaks.image.renderable.NullRenderable;
+import net.blay09.mods.chattweaks.reference.Reference;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TextFormatting;
 
 public class Emote implements IEmote {
 
@@ -32,7 +31,7 @@ public class Emote implements IEmote {
 		this.loader = loader;
 
 		if(!isRegex) {
-			tooltip.add(TextFormatting.YELLOW + I18n.format(ChatTweaks.MOD_ID + ":gui.chat.tooltipEmote") + " " + TextFormatting.WHITE + code);
+			tooltip.add(TextFormatting.YELLOW + I18n.format(Reference.MOD_ID + ":gui.chat.tooltipEmote") + " " + TextFormatting.WHITE + code);
 		}
 	}
 

@@ -1,16 +1,15 @@
 package net.blay09.mods.chattweaks.chat.emotes.twitch;
 
+import java.net.URI;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.blay09.mods.chattweaks.ChatTweaks;
-import net.blay09.mods.chattweaks.ChatTweaksAPI;
+import net.blay09.mods.chattweaks.api.ChatTweaksAPI;
 import net.blay09.mods.chattweaks.chat.emotes.IEmote;
 import net.blay09.mods.chattweaks.chat.emotes.IEmoteGroup;
 import net.blay09.mods.chattweaks.chat.emotes.IEmoteLoader;
+import net.blay09.mods.chattweaks.reference.Reference;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
-
-import java.net.URI;
 
 public class TwitchGlobalEmotes implements IEmoteLoader {
 
@@ -19,8 +18,14 @@ public class TwitchGlobalEmotes implements IEmoteLoader {
 	public TwitchGlobalEmotes(boolean includeTurbo, boolean includeSmileys) {
 		JsonObject root = includeTurbo ? TwitchEmotesAPI.loadEmotes(TwitchEmotesAPI.EMOTESET_GLOBAL, TwitchEmotesAPI.EMOTESET_TURBO) : TwitchEmotesAPI.loadEmotes(TwitchEmotesAPI.EMOTESET_GLOBAL);
 		if(root != null) {
-			loadEmotes(root.getAsJsonObject("emoticon_sets").getAsJsonArray(String.valueOf(TwitchEmotesAPI.EMOTESET_GLOBAL)), TextFormatting.GRAY + I18n.format(ChatTweaks.MOD_ID + ":gui.chat.tooltipTwitchEmotes"), includeSmileys, ChatTweaksAPI.registerEmoteGroup("TwitchGlobal"));
-			loadEmotes(root.getAsJsonObject("emoticon_sets").getAsJsonArray(String.valueOf(TwitchEmotesAPI.EMOTESET_TURBO)), TextFormatting.GRAY + I18n.format(ChatTweaks.MOD_ID + ":gui.chat.tooltipTwitchTurboEmotes"), includeSmileys, ChatTweaksAPI.registerEmoteGroup("TwitchTurbo"));
+			loadEmotes(root.getAsJsonObject("emoticon_sets")
+						.getAsJsonArray(String.valueOf(TwitchEmotesAPI.EMOTESET_GLOBAL)),
+							TextFormatting.GRAY + I18n.format(Reference.MOD_ID + ":gui.chat.tooltipTwitchEmotes"),
+							includeSmileys, ChatTweaksAPI.registerEmoteGroup("TwitchGlobal"));
+			loadEmotes(root.getAsJsonObject("emoticon_sets")
+						.getAsJsonArray(String.valueOf(TwitchEmotesAPI.EMOTESET_TURBO)),
+							TextFormatting.GRAY + I18n.format(Reference.MOD_ID + ":gui.chat.tooltipTwitchTurboEmotes"),
+							includeSmileys, ChatTweaksAPI.registerEmoteGroup("TwitchTurbo"));
 		}
 	}
 

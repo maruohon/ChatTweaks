@@ -1,12 +1,17 @@
 package net.blay09.mods.chattweaks.auth;
 
-import com.google.common.collect.Maps;
-import net.blay09.mods.chattweaks.ChatTweaks;
-
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import com.google.common.collect.Maps;
+import net.blay09.mods.chattweaks.LiteModChatTweaks;
 
 public class AuthManager {
 
@@ -30,7 +35,7 @@ public class AuthManager {
 			}
 		} catch(FileNotFoundException ignored) {
 		} catch (IOException e) {
-			ChatTweaks.logger.error("An error occurred when trying to load authentication data: ", e);
+			LiteModChatTweaks.logger.error("An error occurred when trying to load authentication data: ", e);
 		}
 	}
 
@@ -45,7 +50,7 @@ public class AuthManager {
 				out.writeUTF(entry.getValue().getToken());
 			}
 		} catch (IOException e) {
-			ChatTweaks.logger.error("An error occurred when trying to save authentication data: ", e);
+			LiteModChatTweaks.logger.error("An error occurred when trying to save authentication data: ", e);
 		}
 	}
 

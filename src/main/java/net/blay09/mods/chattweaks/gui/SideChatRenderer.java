@@ -1,13 +1,11 @@
 package net.blay09.mods.chattweaks.gui;
 
+import java.util.List;
 import com.google.common.collect.Lists;
 import net.blay09.mods.chattweaks.chat.ChatMessage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import java.util.List;
 
 public class SideChatRenderer {
 
@@ -39,22 +37,20 @@ public class SideChatRenderer {
 		}
 	}
 
-	@SubscribeEvent
-	@SuppressWarnings("unused")
-	public void onDrawOverlayChat(RenderGameOverlayEvent.Post event) {
-		if(event.getType() != RenderGameOverlayEvent.ElementType.ALL || messages.isEmpty()) {
+	public void onRenderGameOverlayPost(Minecraft mc, ScaledResolution scaledResolution, float partialTicks) {
+		if(messages.isEmpty()) {
 			return;
 		}
 		final int height = 64;
-		int guiTop = event.getResolution().getScaledHeight() - height;
-		int guiLeft = event.getResolution().getScaledWidth();
+		int guiTop = scaledResolution.getScaledHeight() - height;
+		int guiLeft = scaledResolution.getScaledWidth();
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(guiLeft, guiTop, 0f);
 		GlStateManager.scale(SCALE, SCALE, 1f);
 		GlStateManager.enableBlend();
 		for(int i = messages.size() - 1; i >= 0; i--) {
 			SideChatMessage message = messages.get(i);
-			message.timeLeft -= event.getPartialTicks();
+			message.timeLeft -= partialTicks;
 			int alpha = 255;
 			if(message.timeLeft < MESSAGE_TIME / 5f) {
 				alpha = (int) Math.max(11, (255f * (message.timeLeft / (MESSAGE_TIME / 5f))));
@@ -63,7 +59,7 @@ public class SideChatRenderer {
 				messages.remove(i);
 			}
 			String formattedText = message.chatMessage.getTextComponent().getFormattedText();
-			Minecraft.getMinecraft().fontRenderer.drawString(formattedText, -Minecraft.getMinecraft().fontRenderer.getStringWidth(formattedText) - 16, message.y, 0xFFFFFF + (alpha << 24), true);
+			mc.fontRenderer.drawString(formattedText, -mc.fontRenderer.getStringWidth(formattedText) - 16, message.y, 0xFFFFFF + (alpha << 24), true);
 		}
 		GlStateManager.disableBlend();
 		GlStateManager.popMatrix();

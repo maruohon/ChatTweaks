@@ -1,21 +1,20 @@
 package net.blay09.mods.chattweaks.chat.emotes.twitch;
 
-import com.google.common.collect.Maps;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import net.blay09.mods.chattweaks.ChatTweaks;
-import net.blay09.mods.chattweaks.ChatTweaksAPI;
-import net.blay09.mods.chattweaks.chat.emotes.IEmote;
-import net.blay09.mods.chattweaks.chat.emotes.IEmoteGroup;
-import net.blay09.mods.chattweaks.chat.emotes.IEmoteLoader;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.TextFormatting;
-
 import java.net.URI;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import com.google.common.collect.Maps;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import net.blay09.mods.chattweaks.api.ChatTweaksAPI;
+import net.blay09.mods.chattweaks.chat.emotes.IEmote;
+import net.blay09.mods.chattweaks.chat.emotes.IEmoteGroup;
+import net.blay09.mods.chattweaks.chat.emotes.IEmoteLoader;
+import net.blay09.mods.chattweaks.reference.Reference;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TextFormatting;
 
 public class TwitchSubscriberEmotes implements IEmoteLoader {
 
@@ -49,7 +48,7 @@ public class TwitchSubscriberEmotes implements IEmoteLoader {
 					emote.setCustomData(id);
 					String channel = TwitchEmotesAPI.getChannelForEmoteSet(emoteSet);
 					if(channel != null) {
-						emote.addTooltip(TextFormatting.GRAY + I18n.format(ChatTweaks.MOD_ID + ":gui.chat.tooltipEmoteChannel") + " " + channel);
+						emote.addTooltip(TextFormatting.GRAY + I18n.format(Reference.MOD_ID + ":gui.chat.tooltipEmoteChannel") + " " + channel);
 					}
 					emote.setImageCacheFile("twitch-" + id);
 					group.addEmote(emote);

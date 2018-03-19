@@ -1,5 +1,15 @@
 package net.blay09.mods.chattweaks;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
+import org.apache.commons.lang3.ArrayUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -13,17 +23,6 @@ import net.blay09.mods.chattweaks.chat.MessageStyle;
 import net.blay09.mods.chattweaks.gui.chat.GuiChatExt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import org.apache.commons.lang3.ArrayUtils;
-
-import javax.annotation.Nullable;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 public class ChatViewManager {
 
@@ -77,7 +76,7 @@ public class ChatViewManager {
 			}
 		} catch (FileNotFoundException ignored) {
 		} catch (Exception e) {
-			ChatTweaks.logger.error("An error occurred trying to load the chat views: ", e);
+			LiteModChatTweaks.logger.error("An error occurred trying to load the chat views: ", e);
 		}
 		if(views.isEmpty()) {
 			addChatView(createDefaultView());
@@ -102,7 +101,7 @@ public class ChatViewManager {
 			root.add("views", jsonViews);
 			gson.toJson(root, jsonWriter);
 		} catch (IOException e) {
-			ChatTweaks.logger.error("An error occurred trying to save the chat views: ", e);
+			LiteModChatTweaks.logger.error("An error occurred trying to save the chat views: ", e);
 		}
 	}
 
@@ -182,7 +181,7 @@ public class ChatViewManager {
 	public static void setActiveView(ChatView view) {
 		activeView = view;
 		view.markAsUnread(false);
-		ChatTweaks.getChatDisplay().refreshChat();
+		LiteModChatTweaks.getChatDisplay().refreshChat();
 	}
 
 	public static ChatView getActiveView() {

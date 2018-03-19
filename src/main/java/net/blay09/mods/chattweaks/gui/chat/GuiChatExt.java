@@ -1,31 +1,5 @@
 package net.blay09.mods.chattweaks.gui.chat;
 
-import com.google.common.base.Strings;
-import net.blay09.mods.chattweaks.ChatTweaks;
-import net.blay09.mods.chattweaks.ChatTweaksConfig;
-import net.blay09.mods.chattweaks.ChatViewManager;
-import net.blay09.mods.chattweaks.chat.ChatView;
-import net.blay09.mods.chattweaks.chat.MessageStyle;
-import net.blay09.mods.chattweaks.event.ClientChatEvent;
-import net.blay09.mods.chattweaks.event.TabCompletionEvent;
-import net.blay09.mods.chattweaks.event.ChatComponentClickEvent;
-import net.blay09.mods.chattweaks.event.ChatComponentHoverEvent;
-import net.blay09.mods.chattweaks.gui.config.GuiChatView;
-import net.blay09.mods.chattweaks.gui.config.GuiFactory;
-import net.blay09.mods.chattweaks.gui.emotes.GuiButtonEmotes;
-import net.blay09.mods.chattweaks.gui.emotes.GuiOverlayEmotes;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.relauncher.Side;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,6 +7,32 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import com.google.common.base.Strings;
+import net.blay09.mods.chattweaks.ChatViewManager;
+import net.blay09.mods.chattweaks.LiteModChatTweaks;
+import net.blay09.mods.chattweaks.api.event.ChatComponentClickEvent;
+import net.blay09.mods.chattweaks.api.event.ChatComponentHoverEvent;
+import net.blay09.mods.chattweaks.api.event.ClientChatEvent;
+import net.blay09.mods.chattweaks.api.event.TabCompletionEvent;
+import net.blay09.mods.chattweaks.chat.ChatView;
+import net.blay09.mods.chattweaks.chat.MessageStyle;
+import net.blay09.mods.chattweaks.config.Configs;
+import net.blay09.mods.chattweaks.event.EventBus;
+import net.blay09.mods.chattweaks.gui.config.GuiChatView;
+import net.blay09.mods.chattweaks.gui.config.GuiFactory;
+import net.blay09.mods.chattweaks.gui.emotes.GuiButtonEmotes;
+import net.blay09.mods.chattweaks.gui.emotes.GuiOverlayEmotes;
+import net.blay09.mods.chattweaks.mixin.IMixinGuiChat;
+import net.blay09.mods.chattweaks.mixin.IMixinGuiTextField;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiChat;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.event.ClickEvent;
 
 public class GuiChatExt extends GuiChat {
 
@@ -46,13 +46,13 @@ public class GuiChatExt extends GuiChat {
 	public void initGui() {
 		String oldText = inputField != null ? inputField.getText() : null;
 		super.initGui();
-		inputField.width = inputField.width - 36;
+		((IMixinGuiTextField) (Object) inputField).setWidth(((IMixinGuiTextField) (Object) inputField).getWidth() - 36);
 		if (!Strings.isNullOrEmpty(oldText)) {
 			inputField.setText(oldText);
 		}
 
 		buttonList.add(new GuiButtonSettings(0, width - 16, height - 14));
-		if (!ChatTweaksConfig.hideEmotesMenu) {
+		if (! Configs.Generic.HIDE_EMOTES_MENU.getBooleanValue()) {
 			buttonList.add(new GuiButtonEmotes(0, width - 30, height - 14));
 		}
 
@@ -74,7 +74,7 @@ public class GuiChatExt extends GuiChat {
 				}
 				GuiButtonChatView btnChatView = new GuiButtonChatView(-1, x, y, Minecraft.getMinecraft().fontRenderer, chatView);
 				buttonList.add(btnChatView);
-				x += btnChatView.width + 2;
+				x += btnChatView.getButtonWidth() + 2;
 			}
 		}
 	}
@@ -110,7 +110,7 @@ public class GuiChatExt extends GuiChat {
 			event.setMessage(ChatViewManager.getActiveView().getOutgoingPrefix() + event.getMessage());
 		}
 		String newMessage;
-		if (MinecraftForge.EVENT_BUS.post(event)) {
+		if (EventBus.instance().post(event)) {
 			newMessage = null;
 		} else {
 			newMessage = event.getMessage();
@@ -142,8 +142,8 @@ public class GuiChatExt extends GuiChat {
 
 	@Override
 	public void handleKeyboardInput() throws IOException {
-		if (Keyboard.getEventKeyState() && ChatTweaks.keySwitchChatView.isActiveAndMatches(Keyboard.getEventKey())) {
-			ChatViewManager.setActiveView(ChatViewManager.getNextChatView(ChatViewManager.getActiveView(), ChatTweaksConfig.preferNewMessages));
+		if (Keyboard.getEventKeyState() && LiteModChatTweaks.KEY_SWITCH_CHAT_VIEW.getKeyCode() == Keyboard.getEventKey()) {
+			ChatViewManager.setActiveView(ChatViewManager.getNextChatView(ChatViewManager.getActiveView(), Configs.Generic.PREFER_NEW_MESSAGES.getBooleanValue()));
 		} else {
 			super.handleKeyboardInput();
 		}
@@ -160,33 +160,37 @@ public class GuiChatExt extends GuiChat {
 	@Override
 	public void setCompletions(String... newCompletions) {
 		String input = inputField.getText().substring(0, inputField.getCursorPosition());
-		BlockPos pos = tabCompleter.getTargetBlockPos();
+		BlockPos pos = ((IMixinGuiChat) (Object) this).getTabCompleter().getTargetBlockPos();
 		List<String> list = new ArrayList<>();
 		Collections.addAll(list, newCompletions);
 
-		MinecraftForge.EVENT_BUS.post(new TabCompletionEvent(Side.CLIENT, Minecraft.getMinecraft().player, input.split(" ")[0], pos, pos != null, list));
+		EventBus.instance().post(new TabCompletionEvent(Minecraft.getMinecraft().player, input.split(" ")[0], pos, pos != null, list));
 		super.setCompletions(list.toArray(new String[list.size()]));
 	}
 
 	@Override
 	protected void handleComponentHover(ITextComponent component, int x, int y) {
-		if (!MinecraftForge.EVENT_BUS.post(new ChatComponentHoverEvent(component, x, y))) {
-			super.handleComponentHover(component, x, y);
+		if (EventBus.instance().post(new ChatComponentHoverEvent(component, x, y))) {
+			return;
 		}
+
+		super.handleComponentHover(component, x, y);
 	}
 
 	@Override
 	public boolean handleComponentClick(ITextComponent component) {
 		if (component != null) {
-			if (MinecraftForge.EVENT_BUS.post(new ChatComponentClickEvent(component))) {
+			if (EventBus.instance().post(new ChatComponentClickEvent(component))) {
 				return true;
 			}
+
 			ClickEvent clickEvent = component.getStyle().getClickEvent();
+
 			if (clickEvent != null) {
 				if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
 					String url = clickEvent.getValue();
 					String directURL = null;
-					for (Function<String, String> function : ChatTweaks.getImageURLTransformers()) {
+					for (Function<String, String> function : LiteModChatTweaks.getImageURLTransformers()) {
 						directURL = function.apply(url);
 						if (directURL != null) {
 							break;
@@ -197,12 +201,13 @@ public class GuiChatExt extends GuiChat {
 							Minecraft.getMinecraft().displayGuiScreen(new GuiImagePreview(Minecraft.getMinecraft().currentScreen, new URL(url), new URL(directURL)));
 							return true;
 						} catch (MalformedURLException e) {
-							ChatTweaks.logger.error("Could not open image preview: ", e);
+							LiteModChatTweaks.logger.error("Could not open image preview: ", e);
 						}
 					}
 				}
 			}
 		}
+
 		return super.handleComponentClick(component);
 	}
 }

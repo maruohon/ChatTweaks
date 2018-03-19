@@ -1,9 +1,8 @@
 package net.blay09.mods.chattweaks.chat.emotes;
 
-import com.google.common.collect.Lists;
-import net.blay09.mods.chattweaks.ChatTweaks;
-
 import java.util.LinkedList;
+import com.google.common.collect.Lists;
+import net.blay09.mods.chattweaks.LiteModChatTweaks;
 
 public class AsyncEmoteLoader implements Runnable {
 
@@ -43,7 +42,7 @@ public class AsyncEmoteLoader implements Runnable {
                         try {
                             emote.getLoader().loadEmoteImage(emote);
                         } catch (Exception e) {
-                            ChatTweaks.logger.error("Failed to load emote {}: ", emote.getCode(), e);
+                            LiteModChatTweaks.logger.error("Failed to load emote {}: ", emote.getCode(), e);
                         }
                     }
                 }

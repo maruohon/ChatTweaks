@@ -1,14 +1,12 @@
 package net.blay09.mods.chattweaks.gui.chat;
 
+import java.io.IOException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.network.play.client.CPacketEntityAction;
-import net.minecraftforge.fml.client.FMLClientHandler;
-
-import java.io.IOException;
 
 public class GuiSleepMPExt extends GuiChatExt {
 
@@ -26,7 +24,7 @@ public class GuiSleepMPExt extends GuiChatExt {
 	public void updateScreen() {
 		super.updateScreen();
 
-		if (!FMLClientHandler.instance().getClientPlayerEntity().isPlayerSleeping()) {
+		if (!Minecraft.getMinecraft().player.isPlayerSleeping()) {
 			Minecraft.getMinecraft().displayGuiScreen(null);
 		}
 	}
@@ -50,7 +48,7 @@ public class GuiSleepMPExt extends GuiChatExt {
 	}
 
 	private void wakeFromSleep() {
-		EntityPlayerSP player = FMLClientHandler.instance().getClientPlayerEntity();
+		EntityPlayerSP player = Minecraft.getMinecraft().player;
 		NetHandlerPlayClient netHandler = player.connection;
 		netHandler.sendPacket(new CPacketEntityAction(player, CPacketEntityAction.Action.STOP_SLEEPING));
 		Minecraft.getMinecraft().displayGuiScreen(null);

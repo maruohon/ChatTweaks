@@ -19,9 +19,9 @@ public class GuiButtonSettings extends GuiButton {
 			int hoverState = getHoverState(hovered);
 			mouseDragged(mc, mouseX, mouseY);
 			int j = 0xE0E0E0;
-			if (packedFGColour != 0) {
+			/*if (packedFGColour != 0) {
 				j = packedFGColour;
-			} else if (!enabled) {
+			} else */if (!enabled) {
 				j = 0xA0A0A0;
 			} else if (hovered) {
 				j = 0xFFFFA0;

@@ -1,20 +1,20 @@
 package net.blay09.mods.chattweaks.gui.emotes;
 
+import java.util.List;
+import org.apache.commons.lang3.ArrayUtils;
 import com.google.common.collect.Lists;
-import net.blay09.mods.chattweaks.ChatTweaks;
+import net.blay09.mods.chattweaks.chat.emotes.EmoteRegistry;
 import net.blay09.mods.chattweaks.chat.emotes.IEmote;
 import net.blay09.mods.chattweaks.chat.emotes.IEmoteGroup;
 import net.blay09.mods.chattweaks.image.renderable.IChatRenderable;
-import net.blay09.mods.chattweaks.chat.emotes.EmoteRegistry;
 import net.blay09.mods.chattweaks.image.renderable.ImageLoader;
+import net.blay09.mods.chattweaks.mixin.IMixinGuiChat;
+import net.blay09.mods.chattweaks.mixin.IMixinGuiScreen;
+import net.blay09.mods.chattweaks.reference.Reference;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.ArrayUtils;
-
-import java.util.List;
 
 public class GuiOverlayEmotes {
 
@@ -56,13 +56,13 @@ public class GuiOverlayEmotes {
 		this.parentScreen = parentScreen;
 
 		if (iconTwitch == null) {
-			iconTwitch = ImageLoader.loadImage(new ResourceLocation(ChatTweaks.MOD_ID, "groups/twitch.png"));
+			iconTwitch = ImageLoader.loadImage(new ResourceLocation(Reference.MOD_ID, "groups/twitch.png"));
 		}
 		if (iconBTTV == null) {
-			iconBTTV = ImageLoader.loadImage(new ResourceLocation(ChatTweaks.MOD_ID, "groups/bttv.png"));
+			iconBTTV = ImageLoader.loadImage(new ResourceLocation(Reference.MOD_ID, "groups/bttv.png"));
 		}
 		if (iconFFZ == null) {
-			iconFFZ = ImageLoader.loadImage(new ResourceLocation(ChatTweaks.MOD_ID, "groups/ffz.png"));
+			iconFFZ = ImageLoader.loadImage(new ResourceLocation(Reference.MOD_ID, "groups/ffz.png"));
 		}
 	}
 
@@ -76,17 +76,17 @@ public class GuiOverlayEmotes {
 		int groupY = y + 2;
 		IEmoteGroup twitchGroup = EmoteRegistry.getGroup("TwitchGlobal");
 		if (twitchGroup != null) {
-			parentScreen.buttonList.add(new GuiButtonEmoteGroup(-1, groupX, groupY, iconTwitch, twitchGroup));
+		    ((IMixinGuiScreen) this.parentScreen).invokeAddButton(new GuiButtonEmoteGroup(-1, groupX, groupY, iconTwitch, twitchGroup));
 			groupY += 14;
 		}
 		IEmoteGroup bttvGroup = EmoteRegistry.getGroup("BTTV");
 		if (bttvGroup != null) {
-			parentScreen.buttonList.add(new GuiButtonEmoteGroup(-1, groupX, groupY, iconBTTV, bttvGroup));
+		    ((IMixinGuiScreen) this.parentScreen).invokeAddButton(new GuiButtonEmoteGroup(-1, groupX, groupY, iconBTTV, bttvGroup));
 			groupY += 14;
 		}
 		IEmoteGroup ffzGroup = EmoteRegistry.getGroup("FFZ");
 		if (ffzGroup != null) {
-			parentScreen.buttonList.add(new GuiButtonEmoteGroup(-1, groupX, groupY, iconFFZ, ffzGroup));
+		    ((IMixinGuiScreen) this.parentScreen).invokeAddButton(new GuiButtonEmoteGroup(-1, groupX, groupY, iconFFZ, ffzGroup));
 			groupY += 14;
 		}
 
@@ -105,7 +105,7 @@ public class GuiOverlayEmotes {
 		if (button instanceof GuiButtonEmoteGroup) {
 			displayGroup(((GuiButtonEmoteGroup) button).getEmoteGroup());
 		} else if (button instanceof GuiButtonEmote) {
-			((GuiChat) parentScreen).inputField.writeText(" " + ((GuiButtonEmote) button).getEmote().getCode() + " ");
+			((IMixinGuiChat) (Object) parentScreen).getInputField().writeText(" " + ((GuiButtonEmote) button).getEmote().getCode() + " ");
 		}
 	}
 
@@ -116,7 +116,7 @@ public class GuiOverlayEmotes {
 		for (GuiButtonEmote button : emoteButtons) {
 			index++;
 			if (index >= scrollOffset) {
-				if (buttonX + button.width > x + width - 2) {
+				if (buttonX + button.getButtonWidth() > x + width - 2) {
 					buttonX = x + 16;
 					buttonY += 18;
 				}
@@ -127,7 +127,7 @@ public class GuiOverlayEmotes {
 				button.x = buttonX;
 				button.y = buttonY;
 				button.visible = true;
-				buttonX += button.width + 2;
+				buttonX += button.getButtonWidth() + 2;
 			} else {
 				button.visible = false;
 			}
@@ -143,7 +143,7 @@ public class GuiOverlayEmotes {
 			if (!emote.isRegex() && !ArrayUtils.contains(BANNED_EMOTES, emote.getCode())) {
 				GuiButtonEmote button = new GuiButtonEmote(-1, x, y, emote);
 				emoteButtons.add(button);
-				parentScreen.buttonList.add(button);
+				((IMixinGuiScreen) this.parentScreen).invokeAddButton(button);
 			}
 		}
 		currentGroup = group.getName();
@@ -161,13 +161,13 @@ public class GuiOverlayEmotes {
 
 	private void clear() {
 		scrollOffset = 0;
-		parentScreen.buttonList.removeIf(guiButton -> guiButton instanceof GuiButtonEmote);
+		((IMixinGuiScreen) this.parentScreen).getButtonList().removeIf(guiButton -> guiButton instanceof GuiButtonEmote);
 		emoteButtons.clear();
 	}
 
 	public void close() {
 		clear();
-		parentScreen.buttonList.removeIf(p -> p instanceof GuiButtonEmoteGroup);
+		((IMixinGuiScreen) this.parentScreen).getButtonList().removeIf(p -> p instanceof GuiButtonEmoteGroup);
 	}
 
 	public boolean isMouseInside() {

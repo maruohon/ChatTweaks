@@ -1,9 +1,8 @@
 package net.blay09.mods.chattweaks.balyware.gui;
 
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-
-import java.util.List;
 
 public class GuiUtils extends GuiScreen {
 
@@ -17,7 +16,7 @@ public class GuiUtils extends GuiScreen {
 	}
 
 	public static void drawTooltip(List<String> list, int x, int y) {
-		getInstance().drawHoveringText(list, x, y, Minecraft.getMinecraft().fontRenderer);
+		getInstance().drawHoveringText(list, x, y);
 	}
 
 }

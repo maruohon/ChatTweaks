@@ -1,5 +1,6 @@
 package net.blay09.mods.chattweaks.balyware.gui;
 
+import net.blay09.mods.chattweaks.mixin.IMixinGuiTextField;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.text.TextFormatting;
 
@@ -39,8 +40,11 @@ public class GuiFormattedTextField extends GuiTextField {
 		super.drawTextBox();
 
 		if (!isFocused() && isEmpty) {
-			fontRenderer.getBaseFontRenderer().drawStringWithShadow(TextFormatting.GRAY + displayTextWhenEmpty, x + 4, y + (height - 8) / 2, 0xE0E0E0);
+			fontRenderer.getBaseFontRenderer().drawStringWithShadow(TextFormatting.GRAY + displayTextWhenEmpty, x + 4, y + (this.getHeight() - 8) / 2, 0xE0E0E0);
 		}
 	}
 
+	private int getHeight() {
+		return ((IMixinGuiTextField) (Object) this).getHeight();
+	}
 }

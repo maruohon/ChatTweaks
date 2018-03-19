@@ -1,16 +1,16 @@
 package net.blay09.mods.chattweaks;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
 import net.blay09.mods.chattweaks.chat.ChatChannel;
 import net.blay09.mods.chattweaks.chat.ChatMessage;
 import net.blay09.mods.chattweaks.chat.ChatView;
+import net.blay09.mods.chattweaks.reference.Reference;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
-
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChatManager {
 
@@ -70,7 +70,7 @@ public class ChatManager {
 	}
 
 	public static ChatChannel getTemporaryChannel(String name) {
-		return channels.computeIfAbsent(name, n -> new ChatChannel(n, "(temporary channel)", new ResourceLocation(ChatTweaks.MOD_ID, "channel_temporary")));
+		return channels.computeIfAbsent(name, n -> new ChatChannel(n, "(temporary channel)", new ResourceLocation(Reference.MOD_ID, "channel_temporary")));
 	}
 
 	public static void removeChatChannel(String name) {

@@ -1,15 +1,19 @@
 package net.blay09.mods.chattweaks.balyware;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import net.blay09.mods.chattweaks.ChatTweaks;
-import net.minecraft.client.Minecraft;
-
-import javax.annotation.Nullable;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import javax.annotation.Nullable;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import net.blay09.mods.chattweaks.LiteModChatTweaks;
+import net.minecraft.client.Minecraft;
 
 public class CachedAPI {
 
@@ -37,7 +41,7 @@ public class CachedAPI {
 				try(BufferedWriter writer = new BufferedWriter(new FileWriter(cacheFile))) {
 					gson.toJson(result, writer);
 				} catch (IOException e) {
-					ChatTweaks.logger.error("An error occurred trying to cache an API result: ", e);
+					LiteModChatTweaks.logger.error("An error occurred trying to cache an API result: ", e);
 				}
 			}
 		}
@@ -50,7 +54,7 @@ public class CachedAPI {
 			try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
 				return gson.fromJson(reader, JsonObject.class);
 			} catch (IOException e) {
-				ChatTweaks.logger.error("An error occurred trying to load a cached API result: ", e);
+				LiteModChatTweaks.logger.error("An error occurred trying to load a cached API result: ", e);
 			}
 		}
 		return null;
@@ -67,11 +71,11 @@ public class CachedAPI {
 			try(BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
 				return gson.fromJson(reader, JsonObject.class);
 			} catch (Exception e) {
-				ChatTweaks.logger.error("An error occurred trying to parse a JSON API result: ", e);
+				LiteModChatTweaks.logger.error("An error occurred trying to parse a JSON API result: ", e);
 				return null;
 			}
 		} catch (IOException e) {
-			ChatTweaks.logger.error("An error occurred trying to load from an API: ", e);
+			LiteModChatTweaks.logger.error("An error occurred trying to load from an API: ", e);
 			return null;
 		}
 	}

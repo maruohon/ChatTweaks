@@ -1,12 +1,11 @@
 package net.blay09.mods.chattweaks.chat.emotes;
 
+import java.io.File;
 import com.google.common.io.Files;
-import net.blay09.mods.chattweaks.ChatTweaks;
-import net.blay09.mods.chattweaks.ChatTweaksAPI;
+import net.blay09.mods.chattweaks.api.ChatTweaksAPI;
+import net.blay09.mods.chattweaks.reference.Reference;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
-
-import java.io.File;
 
 public class LocalEmotes implements IEmoteLoader {
 
@@ -19,7 +18,7 @@ public class LocalEmotes implements IEmoteLoader {
 		if(files != null) {
 			for(File file : files) {
 				IEmote emote = ChatTweaksAPI.registerEmote(Files.getNameWithoutExtension(file.getName()), this);
-				emote.addTooltip(TextFormatting.GRAY + I18n.format(ChatTweaks.MOD_ID + ":gui.chat.tooltipLocalEmotes"));
+				emote.addTooltip(TextFormatting.GRAY + I18n.format(Reference.MOD_ID + ":gui.chat.tooltipLocalEmotes"));
 				emote.setCustomData(file);
 				group.addEmote(emote);
 			}

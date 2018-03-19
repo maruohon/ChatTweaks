@@ -1,16 +1,14 @@
 package net.blay09.mods.chattweaks.balyware.gui;
 
-import com.google.common.collect.Lists;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraftforge.fml.client.config.GuiCheckBox;
-
-import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
+import net.minecraft.client.gui.GuiButton;
 
 public class GuiOptionGroup {
 
-	private final List<GuiCheckBox> options = Lists.newArrayList();
+	private final List<GuiCheckBox> options = new ArrayList<>();
 
 	public GuiOptionGroup(GuiCheckBox... options) {
 		Collections.addAll(this.options, options);

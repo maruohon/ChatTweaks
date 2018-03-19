@@ -1,10 +1,9 @@
 package net.blay09.mods.chattweaks.image.renderable;
 
-import net.blay09.mods.chattweaks.ChatTweaksConfig;
+import java.awt.image.BufferedImage;
+import net.blay09.mods.chattweaks.config.Configs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureUtil;
-
-import java.awt.image.BufferedImage;
 
 public class StaticChatRenderable implements IChatRenderable {
 
@@ -37,7 +36,7 @@ public class StaticChatRenderable implements IChatRenderable {
 			renderWidth *= factor;
 			renderHeight *= factor;
 		}
-		final float maxHeight = ChatTweaksConfig.smallerEmotes ? MAX_HEIGHT_SMALL : MAX_HEIGHT;
+		final float maxHeight = Configs.Generic.SMALLER_EMOTES.getBooleanValue() ? MAX_HEIGHT_SMALL : MAX_HEIGHT;
 		if(renderHeight > maxHeight) {
 			float factor = maxHeight / renderHeight;
 			renderWidth *= factor;

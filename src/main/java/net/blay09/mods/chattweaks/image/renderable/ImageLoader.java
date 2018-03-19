@@ -1,18 +1,5 @@
 package net.blay09.mods.chattweaks.image.renderable;
 
-import net.blay09.mods.chattweaks.ChatTweaks;
-import net.blay09.mods.chattweaks.balyware.CachedAPI;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IResource;
-import net.minecraft.util.ResourceLocation;
-import org.w3c.dom.NodeList;
-
-import javax.annotation.Nullable;
-import javax.imageio.*;
-import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.metadata.IIOMetadataNode;
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +9,23 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.Locale;
+import javax.annotation.Nullable;
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
+import org.w3c.dom.NodeList;
+import net.blay09.mods.chattweaks.LiteModChatTweaks;
+import net.blay09.mods.chattweaks.balyware.CachedAPI;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IResource;
+import net.minecraft.util.ResourceLocation;
 
 public class ImageLoader {
 
@@ -65,7 +69,7 @@ public class ImageLoader {
 			IResource resource = Minecraft.getMinecraft().getResourceManager().getResource(resourceLocation);
 			return loadImageInternal(resource.getInputStream(), null);
 		} catch (IOException e) {
-			ChatTweaks.logger.error("Failed to load inbuilt image {}: ", resourceLocation, e);
+			LiteModChatTweaks.logger.error("Failed to load inbuilt image {}: ", resourceLocation, e);
 			return NullRenderable.INSTANCE;
 		}
 	}

@@ -23,7 +23,7 @@ public class FormattedFontRenderer extends FontRenderer {
 	private boolean isVisible;
 
 	public FormattedFontRenderer(Minecraft mc, FontRenderer fontRenderer, IStringFormatter formatter) {
-		super(mc.gameSettings, texture, mc.renderEngine, fontRenderer.getUnicodeFlag());
+		super(mc.gameSettings, texture, mc.getTextureManager(), fontRenderer.getUnicodeFlag());
 		setBidiFlag(fontRenderer.getBidiFlag());
 		this.baseFontRenderer = fontRenderer;
 		this.formatter = formatter;

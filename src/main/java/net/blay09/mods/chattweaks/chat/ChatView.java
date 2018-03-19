@@ -1,21 +1,5 @@
 package net.blay09.mods.chattweaks.chat;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import net.blay09.mods.chattweaks.ChatManager;
-import net.blay09.mods.chattweaks.ChatTweaks;
-import net.blay09.mods.chattweaks.ChatTweaksConfig;
-import net.blay09.mods.chattweaks.chat.emotes.EmoteScanner;
-import net.blay09.mods.chattweaks.chat.emotes.PositionedEmote;
-import net.blay09.mods.chattweaks.image.ChatImageEmote;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
-
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -23,6 +7,22 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import javax.annotation.Nullable;
+import com.google.common.collect.Lists;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import net.blay09.mods.chattweaks.ChatManager;
+import net.blay09.mods.chattweaks.LiteModChatTweaks;
+import net.blay09.mods.chattweaks.chat.emotes.EmoteScanner;
+import net.blay09.mods.chattweaks.chat.emotes.PositionedEmote;
+import net.blay09.mods.chattweaks.config.Configs;
+import net.blay09.mods.chattweaks.image.ChatImageEmote;
+import net.blay09.mods.chattweaks.mixin.IMixinTextComponentString;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 public class ChatView {
 
@@ -81,7 +81,7 @@ public class ChatView {
 				if (channel != null) {
 					view.addChannel(channel);
 				} else {
-					ChatTweaks.logger.error("Channel {} does no longer exist. Removing it from view {}.", element.getAsString(), view.name);
+					LiteModChatTweaks.logger.error("Channel {} does no longer exist. Removing it from view {}.", element.getAsString(), view.name);
 				}
 			}
 		}
@@ -171,7 +171,7 @@ public class ChatView {
 					} else if (namedGroup.equals("m") && chatLine.getMessage() != null) {
 						groupValue = chatLine.getMessage();
 					} else if(namedGroup.equals("t")) {
-						groupValue = new TextComponentString(ChatTweaksConfig.timestampFormat.format(new Date(chatLine.getTimestamp())));
+						groupValue = new TextComponentString(Configs.timestampFormat.format(new Date(chatLine.getTimestamp())));
 						groupValue.getStyle().setColor(TextFormatting.GRAY);
 					} else {
 						int groupStart = -1;
@@ -229,14 +229,14 @@ public class ChatView {
 					if (index < text.length()) {
 						sb.append(text.substring(index));
 					}
-					((TextComponentString) component).text = sb.toString();
+					((IMixinTextComponentString) component).setText(sb.toString());
 				}
 				if (text.length() > 0) {
 					if (newComponent == null) {
 						newComponent = new TextComponentString("");
 						newComponent.setStyle(textComponent.getStyle().createDeepCopy());
 					}
-					TextComponentString copyComponent = new TextComponentString(((TextComponentString) component).text);
+					TextComponentString copyComponent = new TextComponentString(((TextComponentString) component).getText());
 					copyComponent.setStyle(component.getStyle());
 					newComponent.appendSibling(copyComponent);
 				}

@@ -4,9 +4,8 @@ import net.blay09.mods.chattweaks.chat.ChatMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class BottomChatRenderer {
 
@@ -21,20 +20,18 @@ public class BottomChatRenderer {
 		this.timeLeft = MESSAGE_TIME;
 	}
 
-	@SubscribeEvent
-	@SuppressWarnings("unused")
-	public void onDrawOverlayChat(RenderGameOverlayEvent.Post event) {
-		if(chatMessage == null || event.getType() != RenderGameOverlayEvent.ElementType.ALL) {
+	public void onRenderGameOverlayPost(Minecraft mc, ScaledResolution scaledResolution, float partialTicks) {
+		if(chatMessage == null) {
 			return;
 		}
-		timeLeft -= event.getPartialTicks();
+		timeLeft -= partialTicks;
 		int alpha = (int) (255f * (timeLeft / MESSAGE_TIME));
 		if(timeLeft <= 0) {
 			chatMessage = null;
 			return;
 		}
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(event.getResolution().getScaledWidth() / 2, event.getResolution().getScaledHeight() - 64, 0f);
+		GlStateManager.translate(scaledResolution.getScaledWidth() / 2, scaledResolution.getScaledHeight() - 64, 0f);
 		GlStateManager.scale(SCALE, SCALE, 1f);
 		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 		String formattedText = chatMessage.getTextComponent().getFormattedText();
