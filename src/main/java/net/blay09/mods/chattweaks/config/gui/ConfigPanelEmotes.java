@@ -4,16 +4,16 @@ import java.util.Collection;
 import net.blay09.mods.chattweaks.config.Configs;
 import net.blay09.mods.chattweaks.config.options.ConfigBase;
 
-public class ConfigPanelGeneric extends ConfigPanelSub
+public class ConfigPanelEmotes extends ConfigPanelSub
 {
-    public ConfigPanelGeneric(ChatTweaksConfigPanel parent)
+    public ConfigPanelEmotes(ChatTweaksConfigPanel parent)
     {
-        super("Generic", parent);
+        super("Emotes", parent);
     }
 
     @Override
     protected Collection<ConfigBase> getConfigs()
     {
-        return Configs.Generic.OPTIONS;
+        return Configs.Emotes.OPTIONS;
     }
 }

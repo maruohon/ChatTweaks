@@ -181,7 +181,7 @@ public class GuiNewChatExt extends GuiNewChat {
 		EmoteRegistry.runDisposal();
 		boolean isChatOpen = this.getChatOpen();
 		if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
-			int lineSpacing = Configs.Generic.LINE_SPACING.getIntegerValue();
+			int lineSpacing = Configs.Generic.LINE_SPACING.getValue();
 			float chatOpacity = this.mc.gameSettings.chatOpacity * 0.9f + 0.1f;
 			int wrappedChatLinesCount = wrappedChatLines.size();
 			if (wrappedChatLinesCount > 0) {
@@ -212,16 +212,16 @@ public class GuiNewChatExt extends GuiNewChat {
 								drawRect(-2, y - fontRenderer.FONT_HEIGHT + lineSpacing / 2, chatWidth + 4, y + (int) Math.ceil((float) lineSpacing / 2f), (chatLine.message.getBackgroundColor() & 0x00FFFFFF) + ((scaledAlpha / 2) << 24));
 							} else {
 								int color;
-								if (! Configs.Generic.ALTERNATE_BACKGROUND.getBooleanValue() || ! chatLine.alternateBackground) {
-									color = Configs.Theme.BG_COLOR_1.getIntegerValue();
+								if (! Configs.Generic.ALTERNATE_BACKGROUND.getValue() || ! chatLine.alternateBackground) {
+									color = Configs.Theme.BG_COLOR_1.getColor();
 								} else {
-									color = Configs.Theme.BG_COLOR_2.getIntegerValue();
+									color = Configs.Theme.BG_COLOR_2.getColor();
 								}
 								drawRect(-2, y - fontRenderer.FONT_HEIGHT - lineSpacing / 2, chatWidth + 4, y + (int) Math.ceil((float) lineSpacing / 2f), (color & 0x00FFFFFF) + ((scaledAlpha / 2) << 24));
 							}
 							GlStateManager.enableBlend();
 							for (TextRenderRegion region : chatLine.regions) {
-								x = fontRenderer.drawString(region.getText(), x, y - fontRenderer.FONT_HEIGHT + 1, (region.getColor() & 0x00FFFFFF) + (((Configs.Generic.CHAT_TEXT_OPACITY.getBooleanValue()) ? alpha : scaledAlpha) << 24), true);
+								x = fontRenderer.drawString(region.getText(), x, y - fontRenderer.FONT_HEIGHT + 1, (region.getColor() & 0x00FFFFFF) + (((Configs.Generic.CHAT_TEXT_OPACITY.getValue()) ? alpha : scaledAlpha) << 24), true);
 							}
 							if (chatLine.images != null) {
 								for (ChatImage image : chatLine.images) {
@@ -264,7 +264,7 @@ public class GuiNewChatExt extends GuiNewChat {
 			}
 		}
 
-		if (! isChatOpen && Configs.Generic.SHOW_NEW_MESSAGE_OVERLAY.getBooleanValue() && ChatViewManager.getViews().size() > 1) {
+		if (! isChatOpen && Configs.Generic.SHOW_NEW_MESSAGE_OVERLAY.getValue() && ChatViewManager.getViews().size() > 1) {
 			int x = 2;
 			int y = 24;
 			for (ChatView chatView : ChatViewManager.getViews()) {
@@ -294,7 +294,7 @@ public class GuiNewChatExt extends GuiNewChat {
 		y = MathHelper.floor((float) y / chatScale);
 		if (x >= 0 && y >= 0) {
 			int lineCount = Math.min(this.getLineCount(), this.wrappedChatLines.size());
-			int lineSpacing = Configs.Generic.LINE_SPACING.getIntegerValue();
+			int lineSpacing = Configs.Generic.LINE_SPACING.getValue();
 			if (x <= MathHelper.floor((float) this.getChatWidth() / this.getChatScale()) && y < (fontRenderer.FONT_HEIGHT + lineSpacing) * lineCount + lineCount) {
 				int clickedIndex = y / (fontRenderer.FONT_HEIGHT + lineSpacing) + this.getScrollPos();
 				if (clickedIndex >= 0 && clickedIndex < this.wrappedChatLines.size()) {

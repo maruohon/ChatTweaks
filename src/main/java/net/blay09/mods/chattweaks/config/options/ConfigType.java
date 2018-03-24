@@ -1,4 +1,4 @@
-package net.blay09.mods.chattweaks.config.interfaces;
+package net.blay09.mods.chattweaks.config.options;
 
 public enum ConfigType
 {

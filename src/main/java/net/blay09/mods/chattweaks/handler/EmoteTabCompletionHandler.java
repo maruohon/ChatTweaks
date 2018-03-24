@@ -10,7 +10,7 @@ public class EmoteTabCompletionHandler
 {
 	public void onTabCompletion(TabCompletionEvent event)
 	{
-		if (Configs.Generic.EMOTE_TAB_COMPLETION.getBooleanValue())
+		if (Configs.Generic.EMOTE_TAB_COMPLETION.getValue())
 		{
 			List<String> strs = CommandBase.getListOfStringsMatchingLastWord(new String[]{event.getInput()}, EmoteRegistry.getCommonEmoteCodes());
 			event.getCompletions().addAll(strs);

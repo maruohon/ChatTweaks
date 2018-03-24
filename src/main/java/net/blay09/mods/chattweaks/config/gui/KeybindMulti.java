@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import org.lwjgl.input.Keyboard;
 import com.google.common.collect.ImmutableList;
-import net.blay09.mods.chattweaks.config.interfaces.IKeybind;
+import net.blay09.mods.chattweaks.config.hotkeys.IKeybind;
 
 public class KeybindMulti implements IKeybind
 {

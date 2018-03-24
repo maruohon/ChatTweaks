@@ -166,9 +166,8 @@ public class ChatTweaksConfigPanel extends AbstractConfigPanel
     private void createSubPanels()
     {
         this.addSubPanel(new ConfigPanelGeneric(this));
-        this.addSubPanel(new ConfigPanelGenericHotkeys(this));
-        this.addSubPanel(new ConfigPanelTweakToggles(this));
-        this.addSubPanel(new ConfigPanelTweakHotkeys(this));
+        this.addSubPanel(new ConfigPanelEmotes(this));
+        this.addSubPanel(new ConfigPanelTheme(this));
     }
 
     private void addSubPanel(ConfigPanelSub panel)

@@ -36,7 +36,7 @@ public class StaticChatRenderable implements IChatRenderable {
 			renderWidth *= factor;
 			renderHeight *= factor;
 		}
-		final float maxHeight = Configs.Generic.SMALLER_EMOTES.getBooleanValue() ? MAX_HEIGHT_SMALL : MAX_HEIGHT;
+		final float maxHeight = Configs.Generic.SMALLER_EMOTES.getValue() ? MAX_HEIGHT_SMALL : MAX_HEIGHT;
 		if(renderHeight > maxHeight) {
 			float factor = maxHeight / renderHeight;
 			renderWidth *= factor;

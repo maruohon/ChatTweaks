@@ -11,8 +11,8 @@ public class HighlightHandler
 {
 	public void onPrintChatMessage(PrintChatMessageEvent event)
 	{
-		if (Configs.Generic.HILIGHT_NAME.getBooleanValue() == false &&
-		    Configs.Generic.HILIGHT_STRINGS.getStringArray().length == 0)
+		if (Configs.Generic.HILIGHT_NAME.getValue() == false &&
+		    Configs.Generic.HILIGHT_STRINGS.getValue().length == 0)
 		{
 			return;
 		}
@@ -33,18 +33,18 @@ public class HighlightHandler
 				{
 					String message = messageComponent.getUnformattedText();
 
-					if (Configs.Generic.HILIGHT_NAME.getBooleanValue() &&
+					if (Configs.Generic.HILIGHT_NAME.getValue() &&
 					    message.matches(".*(?:[\\p{Punct} ]|^)" + playerName + "(?:[\\p{Punct} ]|$).*"))
 					{
-						event.getChatMessage().setBackgroundColor(Configs.Theme.BG_COLOR_HILIGHT.getIntegerValue());
+						event.getChatMessage().setBackgroundColor(Configs.Theme.BG_COLOR_HILIGHT.getColor());
 					}
 					else
 					{
-						for (String highlight : Configs.Generic.HILIGHT_STRINGS.getStringArray())
+						for (String highlight : Configs.Generic.HILIGHT_STRINGS.getValue())
 						{
 							if (message.contains(highlight))
 							{
-								event.getChatMessage().setBackgroundColor(Configs.Theme.BG_COLOR_HILIGHT.getIntegerValue());
+								event.getChatMessage().setBackgroundColor(Configs.Theme.BG_COLOR_HILIGHT.getColor());
 								break;
 							}
 						}

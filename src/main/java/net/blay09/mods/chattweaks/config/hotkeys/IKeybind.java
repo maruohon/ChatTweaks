@@ -1,4 +1,4 @@
-package net.blay09.mods.chattweaks.config.interfaces;
+package net.blay09.mods.chattweaks.config.hotkeys;
 
 import java.util.Collection;
 

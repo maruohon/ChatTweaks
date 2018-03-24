@@ -9,17 +9,19 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import com.google.common.collect.Lists;
 import com.mojang.realmsclient.dto.RealmsServer;
+import com.mumfrey.liteloader.Configurable;
 import com.mumfrey.liteloader.InitCompleteListener;
 import com.mumfrey.liteloader.JoinGameListener;
 import com.mumfrey.liteloader.LiteMod;
 import com.mumfrey.liteloader.core.LiteLoader;
+import com.mumfrey.liteloader.modconfig.ConfigPanel;
 import net.blay09.mods.chattweaks.api.ChatTweaksAPI;
 import net.blay09.mods.chattweaks.auth.AuthManager;
 import net.blay09.mods.chattweaks.chat.ChatChannel;
 import net.blay09.mods.chattweaks.chat.ChatMessage;
 import net.blay09.mods.chattweaks.chat.ChatView;
 import net.blay09.mods.chattweaks.config.Configs;
-import net.blay09.mods.chattweaks.config.ConfigsOrig;
+import net.blay09.mods.chattweaks.config.gui.ChatTweaksConfigPanel;
 import net.blay09.mods.chattweaks.gui.BottomChatRenderer;
 import net.blay09.mods.chattweaks.gui.SideChatRenderer;
 import net.blay09.mods.chattweaks.gui.chat.GuiChatExt;
@@ -41,13 +43,13 @@ import net.minecraft.network.INetHandler;
 import net.minecraft.network.play.server.SPacketJoinGame;
 import net.minecraft.util.text.ITextComponent;
 
-public class LiteModChatTweaks implements LiteMod, InitCompleteListener, JoinGameListener
+public class LiteModChatTweaks implements LiteMod, Configurable, InitCompleteListener, JoinGameListener
 {
     public static final String TEXT_FORMATTING_RGB = "\u00a7#";
     public static final String TEXT_FORMATTING_EMOTE = "\u00a7*";
     public static final Logger logger = LogManager.getLogger(Reference.MOD_ID);
 
-    // FIXME
+    // FIXME LiteLoader port
     public static final KeyBinding KEY_SWITCH_CHAT_VIEW = new KeyBinding("key.chattweaks.switch_chat_view", Keyboard.KEY_TAB, "key.categories.chattweaks");
 
     public static String configDirPath;
@@ -79,6 +81,12 @@ public class LiteModChatTweaks implements LiteMod, InitCompleteListener, JoinGam
     public String getVersion()
     {
         return Reference.MOD_VERSION;
+    }
+
+    @Override
+    public Class<? extends ConfigPanel> getConfigPanelClass()
+    {
+        return ChatTweaksConfigPanel.class;
     }
 
     @Override

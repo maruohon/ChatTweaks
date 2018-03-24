@@ -52,7 +52,7 @@ public class GuiChatExt extends GuiChat {
 		}
 
 		buttonList.add(new GuiButtonSettings(0, width - 16, height - 14));
-		if (! Configs.Generic.HIDE_EMOTES_MENU.getBooleanValue()) {
+		if (! Configs.Generic.HIDE_EMOTES_MENU.getValue()) {
 			buttonList.add(new GuiButtonEmotes(0, width - 30, height - 14));
 		}
 
@@ -143,7 +143,7 @@ public class GuiChatExt extends GuiChat {
 	@Override
 	public void handleKeyboardInput() throws IOException {
 		if (Keyboard.getEventKeyState() && LiteModChatTweaks.KEY_SWITCH_CHAT_VIEW.getKeyCode() == Keyboard.getEventKey()) {
-			ChatViewManager.setActiveView(ChatViewManager.getNextChatView(ChatViewManager.getActiveView(), Configs.Generic.PREFER_NEW_MESSAGES.getBooleanValue()));
+			ChatViewManager.setActiveView(ChatViewManager.getNextChatView(ChatViewManager.getActiveView(), Configs.Generic.PREFER_NEW_MESSAGES.getValue()));
 		} else {
 			super.handleKeyboardInput();
 		}

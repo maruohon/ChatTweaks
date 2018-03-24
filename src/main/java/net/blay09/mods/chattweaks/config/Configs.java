@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mumfrey.liteloader.core.LiteLoader;
@@ -17,6 +18,12 @@ import net.blay09.mods.chattweaks.chat.emotes.twitch.FFZEmotes;
 import net.blay09.mods.chattweaks.chat.emotes.twitch.TwitchEmotesAPI;
 import net.blay09.mods.chattweaks.chat.emotes.twitch.TwitchGlobalEmotes;
 import net.blay09.mods.chattweaks.chat.emotes.twitch.TwitchSubscriberEmotes;
+import net.blay09.mods.chattweaks.config.options.ConfigBase;
+import net.blay09.mods.chattweaks.config.options.ConfigBoolean;
+import net.blay09.mods.chattweaks.config.options.ConfigColor;
+import net.blay09.mods.chattweaks.config.options.ConfigInteger;
+import net.blay09.mods.chattweaks.config.options.ConfigString;
+import net.blay09.mods.chattweaks.config.options.ConfigStringArray;
 import net.blay09.mods.chattweaks.reference.Reference;
 import net.blay09.mods.chattweaks.util.JsonUtils;
 import net.minecraft.client.Minecraft;
@@ -29,37 +36,63 @@ public class Configs
 
     public static class Generic
     {
-        public static final ConfigOption ALTERNATE_BACKGROUND       = new ConfigOption("alternateBackgroundColor", true, "Should uneven lines alternate their background color for easier reading?");
-        public static final ConfigOption CHAT_TEXT_OPACITY          = new ConfigOption("chatTextFullOpacity",  true, "Vanilla Minecraft makes the text in chat transparent too, when opacity is set. Set this to false to restore that behaviour.");
-        public static final ConfigOption EMOTE_TAB_COMPLETION       = new ConfigOption("emoteTabCompletion", false, "Should emotes be considered in tab completion?");
-        public static final ConfigOption HIDE_EMOTES_MENU           = new ConfigOption("hideEmotesMenu", false, "Set to true to hide the emote menu button in the chat.");
-        public static final ConfigOption HILIGHT_NAME               = new ConfigOption("highlightName", false, "If set to true, mentions of your Minecraft IGN will be highlighted in chat.");
-        public static final ConfigOption HILIGHT_STRINGS            = new ConfigOption("highlightedWords", new String[0], "List of words that are highlighted in chat.");
-        public static final ConfigOption LINE_SPACING               = new ConfigOption("lineSpacing", 0, "Spacing between chat lines");
-        public static final ConfigOption PREFER_NEW_MESSAGES        = new ConfigOption("smartViewNavigation", true, "When navigating between views, prefer views with new messages.");
-        public static final ConfigOption SHOW_NEW_MESSAGE_OVERLAY   = new ConfigOption("showNewMessages",  true, "Highlights views with new messages red even when chat is closed.");
-        public static final ConfigOption SMALLER_EMOTES             = new ConfigOption("smallerEmotes", false, "Should emotes be scaled down to perfectly fit into one line?");
-        public static final ConfigOption TIMESTAMP_FORMAT_STRING    = new ConfigOption("timestampFormat", "[HH:mm]", false, "The format for the timestamp to be displayed in.");
+        public static final ConfigBoolean ALTERNATE_BACKGROUND      = new ConfigBoolean("alternateBackgroundColor", true, "Should uneven lines alternate their background color for easier reading?");
+        public static final ConfigBoolean CHAT_TEXT_OPACITY         = new ConfigBoolean("chatTextFullOpacity",  true, "Vanilla Minecraft makes the text in chat transparent too, when opacity is set. Set this to false to restore that behaviour.");
+        public static final ConfigBoolean EMOTE_TAB_COMPLETION      = new ConfigBoolean("emoteTabCompletion", false, "Should emotes be considered in tab completion?");
+        public static final ConfigBoolean HIDE_EMOTES_MENU          = new ConfigBoolean("hideEmotesMenu", false, "Set to true to hide the emote menu button in the chat.");
+        public static final ConfigBoolean HILIGHT_NAME              = new ConfigBoolean("highlightName", false, "If set to true, mentions of your Minecraft IGN will be highlighted in chat.");
+        public static final ConfigStringArray HILIGHT_STRINGS       = new ConfigStringArray("highlightedWords", new String[0], "List of words that are highlighted in chat.");
+        public static final ConfigInteger LINE_SPACING              = new ConfigInteger("lineSpacing", 0, "Spacing between chat lines");
+        public static final ConfigBoolean PREFER_NEW_MESSAGES       = new ConfigBoolean("smartViewNavigation", true, "When navigating between views, prefer views with new messages.");
+        public static final ConfigBoolean SHOW_NEW_MESSAGE_OVERLAY  = new ConfigBoolean("showNewMessages",  true, "Highlights views with new messages red even when chat is closed.");
+        public static final ConfigBoolean SMALLER_EMOTES            = new ConfigBoolean("smallerEmotes", false, "Should emotes be scaled down to perfectly fit into one line?");
+        public static final ConfigString TIMESTAMP_FORMAT_STRING    = new ConfigString("timestampFormat", "[HH:mm]", "The format for the timestamp to be displayed in.");
+
+        public static final ImmutableList<ConfigBase> OPTIONS = ImmutableList.of(
+                ALTERNATE_BACKGROUND,
+                CHAT_TEXT_OPACITY,
+                EMOTE_TAB_COMPLETION,
+                HIDE_EMOTES_MENU,
+                HILIGHT_NAME,
+                HILIGHT_STRINGS,
+                LINE_SPACING,
+                PREFER_NEW_MESSAGES,
+                SHOW_NEW_MESSAGE_OVERLAY,
+                SMALLER_EMOTES,
+                TIMESTAMP_FORMAT_STRING);
     }
 
     public static class Theme
     {
-        public static final ConfigOption BG_COLOR_1         = new ConfigOption("backgroundColor1", "#000000", true, "The background color to use for even line numbers in HEX.");
-        public static final ConfigOption BG_COLOR_2         = new ConfigOption("backgroundColor2", "#111111", true, "The background color to use for uneven line numbers in HEX (if enabled).");
-        public static final ConfigOption BG_COLOR_HILIGHT   = new ConfigOption("hilightColor", "#550000", true, "The background color to use for highlighted lines in HEX.");
+        public static final ConfigColor BG_COLOR_1          = new ConfigColor("backgroundColor1", "#000000", "The background color to use for even line numbers in HEX.");
+        public static final ConfigColor BG_COLOR_2          = new ConfigColor("backgroundColor2", "#111111", "The background color to use for uneven line numbers in HEX (if enabled).");
+        public static final ConfigColor BG_COLOR_HILIGHT    = new ConfigColor("hilightColor", "#550000", "The background color to use for highlighted lines in HEX.");
+
+        public static final ImmutableList<ConfigBase> OPTIONS = ImmutableList.of(BG_COLOR_1, BG_COLOR_2, BG_COLOR_HILIGHT);
     }
 
     public static class Emotes
     {
-        public static final ConfigOption INCLUDE_TWITCH_PRIME_EMOTES    = new ConfigOption("includeTwitchPrimeEmotes", true, "Should Prime emotes (ex. KappaHD) be included with the Twitch Global Emotes?");
-        public static final ConfigOption INCLUDE_TWITCH_SMILEYS         = new ConfigOption("includeTwitchSmileys", false, "Should smileys (ex. :-D) be included with the Twitch Global Emotes?");
-        public static final ConfigOption TWITCH_GLOBAL_EMOTES           = new ConfigOption("twitchGlobalEmotes", true, "Should the Twitch Global emotes (ex. Kappa) be enabled?");
-        public static final ConfigOption TWITCH_SUBSCRIBER_EMOTES       = new ConfigOption("twitchSubscriberEmotes", true, "Should the Twitch Subscriber emotes (ex. geekPraise) be enabled?");
-        public static final ConfigOption TWITCH_SUBSCRIBER_EMOTE_REGEX  = new ConfigOption("twitchSubscriberEmoteRegex", "[a-z0-9][a-z0-9]+[A-Z0-9].*", false, "The regex pattern to match for Twitch Subscriber Emotes to be included. By default includes all that follow prefixCode convention.");
-        public static final ConfigOption BTTV_EMOTES                    = new ConfigOption("BTTVEmotes", true, "Should the BTTV emotes (ex. AngelThump) be enabled?");
-        public static final ConfigOption BTTV_EMOTE_CHANNELS            = new ConfigOption("BTTVEmoteChannels", new String[]{"ZeekDaGeek"}, "A list of channels to postInitLoad BTTV channel emotes from.");
-        public static final ConfigOption FFZ_EMOTES                     = new ConfigOption("FFZEmotes", true, "Should the FrankerFaceZ emotes (ex. ZreknarF) be enabled?");
-        public static final ConfigOption FFZ_EMOTE_CHANNELS             = new ConfigOption("FFZEmoteChannels", new String[]{"tehbasshunter"}, "A list of channels to load FrankerFaceZ channel emotes from.");
+        public static final ConfigBoolean INCLUDE_TWITCH_PRIME_EMOTES   = new ConfigBoolean("includeTwitchPrimeEmotes", true, "Should Prime emotes (ex. KappaHD) be included with the Twitch Global Emotes?");
+        public static final ConfigBoolean INCLUDE_TWITCH_SMILEYS        = new ConfigBoolean("includeTwitchSmileys", false, "Should smileys (ex. :-D) be included with the Twitch Global Emotes?");
+        public static final ConfigBoolean TWITCH_GLOBAL_EMOTES          = new ConfigBoolean("twitchGlobalEmotes", true, "Should the Twitch Global emotes (ex. Kappa) be enabled?");
+        public static final ConfigBoolean TWITCH_SUBSCRIBER_EMOTES      = new ConfigBoolean("twitchSubscriberEmotes", true, "Should the Twitch Subscriber emotes (ex. geekPraise) be enabled?");
+        public static final ConfigString TWITCH_SUBSCRIBER_EMOTE_REGEX  = new ConfigString("twitchSubscriberEmoteRegex", "[a-z0-9][a-z0-9]+[A-Z0-9].*", "The regex pattern to match for Twitch Subscriber Emotes to be included. By default includes all that follow prefixCode convention.");
+        public static final ConfigBoolean BTTV_EMOTES                   = new ConfigBoolean("BTTVEmotes", true, "Should the BTTV emotes (ex. AngelThump) be enabled?");
+        public static final ConfigStringArray BTTV_EMOTE_CHANNELS       = new ConfigStringArray("BTTVEmoteChannels", new String[]{"ZeekDaGeek"}, "A list of channels to postInitLoad BTTV channel emotes from.");
+        public static final ConfigBoolean FFZ_EMOTES                    = new ConfigBoolean("FFZEmotes", true, "Should the FrankerFaceZ emotes (ex. ZreknarF) be enabled?");
+        public static final ConfigStringArray FFZ_EMOTE_CHANNELS        = new ConfigStringArray("FFZEmoteChannels", new String[]{"tehbasshunter"}, "A list of channels to load FrankerFaceZ channel emotes from.");
+
+        public static final ImmutableList<ConfigBase> OPTIONS = ImmutableList.of(
+                INCLUDE_TWITCH_PRIME_EMOTES,
+                INCLUDE_TWITCH_SMILEYS,
+                TWITCH_GLOBAL_EMOTES,
+                TWITCH_SUBSCRIBER_EMOTES,
+                TWITCH_SUBSCRIBER_EMOTE_REGEX,
+                BTTV_EMOTES,
+                BTTV_EMOTE_CHANNELS,
+                FFZ_EMOTES,
+                FFZ_EMOTE_CHANNELS);
     }
 
     public static void load()
@@ -73,21 +106,10 @@ public class Configs
             if (element != null && element.isJsonObject())
             {
                 JsonObject root = element.getAsJsonObject();
-                JsonObject objTweakToggles      = JsonUtils.getNestedObject(root, "TweakToggles", false);
-                JsonObject objTweakHotkeys      = JsonUtils.getNestedObject(root, "TweakHotkeys", false);
-                JsonObject objGenericHotkeys    = JsonUtils.getNestedObject(root, "GenericHotkeys", false);
-                JsonObject objGeneric           = JsonUtils.getNestedObject(root, "Generic", false);
 
-                if (objGeneric != null)
-                {
-                    for (ConfigOption gen : ConfigOption.values())
-                    {
-                        if (objGeneric.has(gen.getName()))
-                        {
-                            gen.setValueFromJsonElement(objGeneric.get(gen.getName()));
-                        }
-                    }
-                }
+                readOptions(root, "Generic", Generic.OPTIONS);
+                readOptions(root, "Emotes", Emotes.OPTIONS);
+                readOptions(root, "Theme", Theme.OPTIONS);
             }
         }
 
@@ -101,7 +123,23 @@ public class Configs
             timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
         }
 
-        InputEventHandler.updateUsedKeys();
+        //InputEventHandler.updateUsedKeys(); // TODO
+    }
+
+    private static void readOptions(JsonObject root, String category, ImmutableList<ConfigBase> options)
+    {
+        JsonObject obj = JsonUtils.getNestedObject(root, category, false);
+
+        if (obj != null)
+        {
+            for (ConfigBase option : options)
+            {
+                if (obj.has(option.getName()))
+                {
+                    option.setValueFromJsonElement(obj.get(option.getName()));
+                }
+            }
+        }
     }
 
     public static void save()
@@ -113,15 +151,10 @@ public class Configs
             File configFile = new File(dir, CONFIG_FILE_NAME);
             FileWriter writer = null;
             JsonObject root = new JsonObject();
-            JsonObject objTweakToggles      = JsonUtils.getNestedObject(root, "TweakToggles", true);
-            JsonObject objTweakHotkeys      = JsonUtils.getNestedObject(root, "TweakHotkeys", true);
-            JsonObject objGenericHotkeys    = JsonUtils.getNestedObject(root, "GenericHotkeys", true);
-            JsonObject objGeneric           = JsonUtils.getNestedObject(root, "Generic", true);
 
-            for (ConfigOption gen : ConfigOption.values())
-            {
-                objGeneric.add(gen.getName(), gen.getAsJsonElement());
-            }
+            writeOptions(root, "Generic", Generic.OPTIONS);
+            writeOptions(root, "Emotes", Emotes.OPTIONS);
+            writeOptions(root, "Theme", Theme.OPTIONS);
 
             try
             {
@@ -150,6 +183,16 @@ public class Configs
         }
     }
 
+    private static void writeOptions(JsonObject root, String category, ImmutableList<ConfigBase> options)
+    {
+        JsonObject obj = JsonUtils.getNestedObject(root, category, true);
+
+        for (ConfigBase option : options)
+        {
+            obj.add(option.getName(), option.getAsJsonElement());
+        }
+    }
+
     public static void postInitLoad() {
         EmoteRegistry.reloadEmoticons();
 
@@ -163,15 +206,15 @@ public class Configs
             }
 
             try {
-                if (Emotes.TWITCH_GLOBAL_EMOTES.getBooleanValue()) {
-                    new TwitchGlobalEmotes(Emotes.INCLUDE_TWITCH_PRIME_EMOTES.getBooleanValue(), Emotes.INCLUDE_TWITCH_SMILEYS.getBooleanValue());
+                if (Emotes.TWITCH_GLOBAL_EMOTES.getValue()) {
+                    new TwitchGlobalEmotes(Emotes.INCLUDE_TWITCH_PRIME_EMOTES.getValue(), Emotes.INCLUDE_TWITCH_SMILEYS.getValue());
                 }
             } catch (Exception e) {
                 LiteModChatTweaks.logger.error("Failed to load Twitch global emotes: ", e);
             }
 
             try {
-                if (Emotes.TWITCH_SUBSCRIBER_EMOTES.getBooleanValue()) {
+                if (Emotes.TWITCH_SUBSCRIBER_EMOTES.getValue()) {
                     new TwitchSubscriberEmotes(Emotes.TWITCH_SUBSCRIBER_EMOTE_REGEX.getStringValue());
                 }
             } catch (Exception e) {
@@ -179,7 +222,7 @@ public class Configs
             }
 
             try {
-                if (Emotes.BTTV_EMOTES.getBooleanValue()) {
+                if (Emotes.BTTV_EMOTES.getValue()) {
                     new BTTVEmotes();
                 }
             } catch (Exception e) {
@@ -187,7 +230,7 @@ public class Configs
             }
 
             try {
-                String[] bttvChannels = Emotes.BTTV_EMOTE_CHANNELS.getStringArray();
+                String[] bttvChannels = Emotes.BTTV_EMOTE_CHANNELS.getValue();
                 for (String channel : bttvChannels) {
                     new BTTVChannelEmotes(channel);
                 }
@@ -196,7 +239,7 @@ public class Configs
             }
 
             try {
-                if (Emotes.FFZ_EMOTES.getBooleanValue()) {
+                if (Emotes.FFZ_EMOTES.getValue()) {
                     new FFZEmotes();
                 }
             } catch (Exception e) {
@@ -204,7 +247,7 @@ public class Configs
             }
 
             try {
-                String[] ffzChannels = Emotes.FFZ_EMOTE_CHANNELS.getStringArray();
+                String[] ffzChannels = Emotes.FFZ_EMOTE_CHANNELS.getValue();
                 for (String channel : ffzChannels) {
                     new FFZChannelEmotes(channel);
                 }

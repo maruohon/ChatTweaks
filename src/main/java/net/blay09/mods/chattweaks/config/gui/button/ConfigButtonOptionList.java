@@ -1,13 +1,13 @@
 package net.blay09.mods.chattweaks.config.gui.button;
 
-import net.blay09.mods.chattweaks.config.interfaces.IConfigOptionList;
+import net.blay09.mods.chattweaks.config.options.ConfigOptionList;
 import net.minecraft.client.Minecraft;
 
 public class ConfigButtonOptionList extends ConfigButtonBase
 {
-    private final IConfigOptionList config;
+    private final ConfigOptionList config;
 
-    public ConfigButtonOptionList(int id, int x, int y, int width, int height, IConfigOptionList config)
+    public ConfigButtonOptionList(int id, int x, int y, int width, int height, ConfigOptionList config)
     {
         super(id, x, y, width, height);
         this.config = config;
@@ -23,13 +23,13 @@ public class ConfigButtonOptionList extends ConfigButtonBase
     @Override
     public void onMouseButtonClicked(int mouseButton)
     {
-        this.config.setOptionListValue(this.config.getOptionListValue().cycle(mouseButton == 0));
+        this.config.setValue(this.config.getValue().cycle(mouseButton == 0));
         this.updateDisplayString();
         this.playPressSound(Minecraft.getMinecraft().getSoundHandler());
     }
 
     private void updateDisplayString()
     {
-        this.displayString = String.valueOf(this.config.getOptionListValue().getDisplayName());
+        this.displayString = String.valueOf(this.config.getValue().getDisplayName());
     }
 }
