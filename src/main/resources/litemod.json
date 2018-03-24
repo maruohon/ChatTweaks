@@ -1,0 +1,5 @@
+{
+    "name": "chattweaks",
+    "mcversion": "1.12",
+    "mixinConfigs": [ "mixins.chattweaks.json" ]
+}

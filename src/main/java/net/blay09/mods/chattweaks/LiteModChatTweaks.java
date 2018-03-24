@@ -22,6 +22,7 @@ import net.blay09.mods.chattweaks.chat.ChatMessage;
 import net.blay09.mods.chattweaks.chat.ChatView;
 import net.blay09.mods.chattweaks.config.Configs;
 import net.blay09.mods.chattweaks.config.gui.ChatTweaksConfigPanel;
+import net.blay09.mods.chattweaks.event.EventBus;
 import net.blay09.mods.chattweaks.gui.BottomChatRenderer;
 import net.blay09.mods.chattweaks.gui.SideChatRenderer;
 import net.blay09.mods.chattweaks.gui.chat.GuiChatExt;
@@ -94,11 +95,10 @@ public class LiteModChatTweaks implements LiteMod, Configurable, InitCompleteLis
     {
         configDirPath = new File(LiteLoader.getCommonConfigFolder(), Reference.MOD_ID).getAbsolutePath();
 
-        MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register((this.sideChatRenderer = new SideChatRenderer()));
-        MinecraftForge.EVENT_BUS.register((this.bottomChatRenderer = new BottomChatRenderer()));
-        MinecraftForge.EVENT_BUS.register(new EmoteTabCompletionHandler());
-        MinecraftForge.EVENT_BUS.register(new HighlightHandler());
+        this.sideChatRenderer = new SideChatRenderer();
+        this.bottomChatRenderer = new BottomChatRenderer();
+        EventBus.instance().register(new EmoteTabCompletionHandler());
+        EventBus.instance().register(new HighlightHandler());
 
         File configDir = new File(LiteLoader.getCommonConfigFolder(), Reference.MOD_ID);
         File cacheDir = new File(configDir, "cache");
@@ -143,17 +143,7 @@ public class LiteModChatTweaks implements LiteMod, Configurable, InitCompleteLis
     @Override
     public void onJoinGame(INetHandler netHandler, SPacketJoinGame joinGamePacket, ServerData serverData, RealmsServer realmsServer)
     {
-        ((IMixinGuiIngame) Minecraft.getMinecraft().ingameGUI).setPersistantChatGUI(this.persistentChatGUI);
-    }
-
-    public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-        if(event.getModID().equals(MOD_ID)) {
-            if("config".equals(event.getConfigID())) {
-                ChatViewManager.save();
-                ConfigsOrig.preInitLoad(config);
-                ConfigsOrig.postInitLoad(config);
-            }
-        }
+        ((IMixinGuiIngame) Minecraft.getMinecraft().ingameGUI).setPersistentChatGUI(this.persistentChatGUI);
     }
 
     public static GuiScreen onOpenGui(GuiScreen gui)

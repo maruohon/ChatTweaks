@@ -1,6 +1,6 @@
 package net.blay09.mods.chattweaks.api.event;
 
-public interface IEventHandler
+public interface IEventHandler<T extends Event>
 {
-    void onEvent(Event event);
+    void onEvent(T event);
 }

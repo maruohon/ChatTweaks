@@ -1,6 +1,6 @@
 package net.blay09.mods.chattweaks.balyware.gui;
 
-import net.blay09.mods.chattweaks.mixin.IMixinGuiTextField;
+import com.mumfrey.liteloader.client.overlays.IGuiTextField;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.text.TextFormatting;
 
@@ -45,6 +45,6 @@ public class GuiFormattedTextField extends GuiTextField {
 	}
 
 	private int getHeight() {
-		return ((IMixinGuiTextField) (Object) this).getHeight();
+		return ((IGuiTextField) (Object) this).getHeight();
 	}
 }

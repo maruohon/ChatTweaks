@@ -1,0 +1,17 @@
+{
+    "required": true,
+    "package": "net.blay09.mods.chattweaks.mixin",
+    "refmap": "mixins.chattweaks.refmap.json",
+    "minVersion": "0.6",
+    "client": [
+        "IMixinGuiChat",
+        "IMixinGuiNewChat",
+        "IMixinGuiScreen",
+        "IMixinTextComponentString",
+        "MixinGuiIngame",
+        "MixinMinecraft"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

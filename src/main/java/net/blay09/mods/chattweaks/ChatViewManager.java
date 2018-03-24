@@ -16,16 +16,19 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
+import com.mumfrey.liteloader.core.LiteLoader;
 import net.blay09.mods.chattweaks.chat.ChatChannel;
 import net.blay09.mods.chattweaks.chat.ChatMessage;
 import net.blay09.mods.chattweaks.chat.ChatView;
 import net.blay09.mods.chattweaks.chat.MessageStyle;
 import net.blay09.mods.chattweaks.gui.chat.GuiChatExt;
+import net.blay09.mods.chattweaks.reference.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
 public class ChatViewManager {
 
+	private static final File CHAT_VIEWS_FILE = new File(new File(LiteLoader.getCommonConfigFolder(), Reference.MOD_ID), "views.json");
 	private static final Map<String, ChatView> views = Maps.newHashMap();
 	private static final List<ChatView> sortedViews = Lists.newArrayList();
 	private static String[] viewNames;
@@ -68,7 +71,7 @@ public class ChatViewManager {
 	public static void load() {
 		removeAllChatViews();
 		Gson gson = new Gson();
-		try(FileReader reader = new FileReader(new File(Minecraft.getMinecraft().mcDataDir, "config/ChatTweaks/views.json"))) {
+		try(FileReader reader = new FileReader(CHAT_VIEWS_FILE)) {
 			JsonObject root = gson.fromJson(reader, JsonObject.class);
 			JsonArray jsonViews = root.getAsJsonArray("views");
 			for (int i = 0; i < jsonViews.size(); i++) {
@@ -88,7 +91,7 @@ public class ChatViewManager {
 
 	public static void save() {
 		Gson gson = new Gson();
-		try(FileWriter writer = new FileWriter(new File(Minecraft.getMinecraft().mcDataDir, "config/ChatTweaks/views.json"))) {
+		try(FileWriter writer = new FileWriter(CHAT_VIEWS_FILE)) {
 			JsonWriter jsonWriter = new JsonWriter(writer);
 			jsonWriter.setIndent("  ");
 			JsonObject root = new JsonObject();

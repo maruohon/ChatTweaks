@@ -12,42 +12,48 @@ import net.blay09.mods.chattweaks.api.event.IEventHandler;
 public class EventBus
 {
     private static final EventBus INSTANCE = new EventBus();
-    private final Map<Class<? extends Event>, List<IEventHandler>> handlerMap = new HashMap<>();
+    private final Map<Class<?>, List<IEventHandler<?>>> handlerMap = new HashMap<>();
 
     public static EventBus instance()
     {
         return INSTANCE;
     }
 
-    @SuppressWarnings("unchecked")
-    public void register(IEventHandler handler)
+    public void register(IEventHandler<?> handler)
     {
-        Class<? extends Event> clazz = null;
+        Class<?> clazz = null;
 
         for (Method method : handler.getClass().getDeclaredMethods())
         {
+            //System.out.printf("EventBus.register(): method = %s\n", method);
             if (method.getName().equals("onEvent") &&
                 method.getParameterCount() == 1 &&
-                method.getParameters()[0].getType().isAssignableFrom(Event.class))
+                Event.class.isAssignableFrom(method.getParameters()[0].getType()))
             {
-                clazz = (Class<? extends Event>) method.getParameters()[0].getType();
+                clazz = (Class<?>) method.getParameters()[0].getType();
+                //System.out.printf("EventBus.register(): method = %s - VALID EVENT, clazz = %s\n", method, clazz);
+                break;
             }
         }
 
         if (clazz != null)
         {
-            List<IEventHandler> handlers = this.handlerMap.get(clazz);
+            List<IEventHandler<?>> handlers = this.handlerMap.get(clazz);
 
             if (handlers == null)
             {
                 handlers = new ArrayList<>();
                 this.handlerMap.put(clazz, handlers);
+                handlers.add(handler);
+                //System.out.printf("EventBus.register(): adding handler for %s\n", clazz);
             }
 
+            /*
             if (handlers.contains(handler) == false)
             {
                 handlers.add(handler);
             }
+            */
         }
         else
         {
@@ -60,15 +66,16 @@ public class EventBus
      * @param event
      * @return true if the event was canceled, false otherwise
      */
-    public boolean post(Event event)
+    @SuppressWarnings("unchecked")
+    public <T extends Event> boolean post(T event)
     {
-        List<IEventHandler> handlers = this.handlerMap.get(event.getClass());
+        List<IEventHandler<?>> handlers = this.handlerMap.get(event.getClass());
 
         if (handlers != null && handlers.size() > 0)
         {
-            for (IEventHandler handler : handlers)
+            for (IEventHandler<?> handler : handlers)
             {
-                handler.onEvent(event);
+                ((IEventHandler<T>) handler).onEvent(event);
 
                 if (event.isCanceled())
                 {

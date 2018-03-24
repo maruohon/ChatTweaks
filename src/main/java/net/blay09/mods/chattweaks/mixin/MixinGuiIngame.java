@@ -22,7 +22,7 @@ public class MixinGuiIngame extends Gui implements IMixinGuiIngame
     private GuiNewChat persistantChatGUI;
 
     @Override
-    public void setPersistantChatGUI(GuiNewChat gui)
+    public void setPersistentChatGUI(GuiNewChat gui)
     {
         this.persistantChatGUI = gui;
     }

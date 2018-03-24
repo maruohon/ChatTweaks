@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mumfrey.liteloader.core.LiteLoader;
+import net.blay09.mods.chattweaks.ChatViewManager;
 import net.blay09.mods.chattweaks.LiteModChatTweaks;
 import net.blay09.mods.chattweaks.chat.emotes.EmoteRegistry;
 import net.blay09.mods.chattweaks.chat.emotes.LocalEmotes;
@@ -56,8 +57,8 @@ public class Configs
                 HILIGHT_NAME,
                 HILIGHT_STRINGS,
                 LINE_SPACING,
-                PREFER_NEW_MESSAGES,
                 SHOW_NEW_MESSAGE_OVERLAY,
+                PREFER_NEW_MESSAGES,
                 SMALLER_EMOTES,
                 TIMESTAMP_FORMAT_STRING);
     }
@@ -84,15 +85,15 @@ public class Configs
         public static final ConfigStringArray FFZ_EMOTE_CHANNELS        = new ConfigStringArray("FFZEmoteChannels", new String[]{"tehbasshunter"}, "A list of channels to load FrankerFaceZ channel emotes from.");
 
         public static final ImmutableList<ConfigBase> OPTIONS = ImmutableList.of(
+                BTTV_EMOTES,
+                BTTV_EMOTE_CHANNELS,
+                FFZ_EMOTES,
+                FFZ_EMOTE_CHANNELS,
                 INCLUDE_TWITCH_PRIME_EMOTES,
                 INCLUDE_TWITCH_SMILEYS,
                 TWITCH_GLOBAL_EMOTES,
                 TWITCH_SUBSCRIBER_EMOTES,
-                TWITCH_SUBSCRIBER_EMOTE_REGEX,
-                BTTV_EMOTES,
-                BTTV_EMOTE_CHANNELS,
-                FFZ_EMOTES,
-                FFZ_EMOTE_CHANNELS);
+                TWITCH_SUBSCRIBER_EMOTE_REGEX);
     }
 
     public static void load()
@@ -180,6 +181,8 @@ public class Configs
                     LiteModChatTweaks.logger.warn("Failed to close config file", e);
                 }
             }
+
+            ChatViewManager.save();
         }
     }
 

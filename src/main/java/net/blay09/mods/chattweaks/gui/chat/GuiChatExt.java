@@ -10,6 +10,7 @@ import java.util.function.Function;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import com.google.common.base.Strings;
+import com.mumfrey.liteloader.client.overlays.IGuiTextField;
 import net.blay09.mods.chattweaks.ChatViewManager;
 import net.blay09.mods.chattweaks.LiteModChatTweaks;
 import net.blay09.mods.chattweaks.api.event.ChatComponentClickEvent;
@@ -20,12 +21,9 @@ import net.blay09.mods.chattweaks.chat.ChatView;
 import net.blay09.mods.chattweaks.chat.MessageStyle;
 import net.blay09.mods.chattweaks.config.Configs;
 import net.blay09.mods.chattweaks.event.EventBus;
-import net.blay09.mods.chattweaks.gui.config.GuiChatView;
-import net.blay09.mods.chattweaks.gui.config.GuiFactory;
 import net.blay09.mods.chattweaks.gui.emotes.GuiButtonEmotes;
 import net.blay09.mods.chattweaks.gui.emotes.GuiOverlayEmotes;
 import net.blay09.mods.chattweaks.mixin.IMixinGuiChat;
-import net.blay09.mods.chattweaks.mixin.IMixinGuiTextField;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiChat;
@@ -46,7 +44,7 @@ public class GuiChatExt extends GuiChat {
 	public void initGui() {
 		String oldText = inputField != null ? inputField.getText() : null;
 		super.initGui();
-		((IMixinGuiTextField) (Object) inputField).setWidth(((IMixinGuiTextField) (Object) inputField).getWidth() - 36);
+		((IGuiTextField) (Object) inputField).setInternalWidth(((IGuiTextField) (Object) inputField).getInternalWidth() - 36);
 		if (!Strings.isNullOrEmpty(oldText)) {
 			inputField.setText(oldText);
 		}
@@ -82,11 +80,13 @@ public class GuiChatExt extends GuiChat {
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException {
 		super.actionPerformed(button);
+
 		if (button instanceof GuiButtonSettings) {
+		    // FIXME LiteLoader port
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-				mc.displayGuiScreen(new GuiChatView(null, ChatViewManager.getActiveView()));
+				//mc.displayGuiScreen(new GuiChatView(null, ChatViewManager.getActiveView()));
 			} else {
-				mc.displayGuiScreen(new GuiFactory.ConfigGUI(this));
+				//mc.displayGuiScreen(new GuiFactory.ConfigGUI(this));
 			}
 		} else if (button instanceof GuiButtonChatView) {
 			ChatViewManager.setActiveView(((GuiButtonChatView) button).getView());
@@ -142,6 +142,7 @@ public class GuiChatExt extends GuiChat {
 
 	@Override
 	public void handleKeyboardInput() throws IOException {
+	    // FIXME LiteLoader port
 		if (Keyboard.getEventKeyState() && LiteModChatTweaks.KEY_SWITCH_CHAT_VIEW.getKeyCode() == Keyboard.getEventKey()) {
 			ChatViewManager.setActiveView(ChatViewManager.getNextChatView(ChatViewManager.getActiveView(), Configs.Generic.PREFER_NEW_MESSAGES.getValue()));
 		} else {
@@ -164,7 +165,10 @@ public class GuiChatExt extends GuiChat {
 		List<String> list = new ArrayList<>();
 		Collections.addAll(list, newCompletions);
 
-		EventBus.instance().post(new TabCompletionEvent(Minecraft.getMinecraft().player, input.split(" ")[0], pos, pos != null, list));
+		String[] parts = input.split(" ");
+		String word = parts.length > 0 ? parts[parts.length - 1] : "";
+		EventBus.instance().post(new TabCompletionEvent(Minecraft.getMinecraft().player, word, pos, pos != null, list));
+
 		super.setCompletions(list.toArray(new String[list.size()]));
 	}
 

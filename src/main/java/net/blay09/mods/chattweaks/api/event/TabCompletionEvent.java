@@ -24,31 +24,31 @@ public class TabCompletionEvent extends Event
 
 	public ICommandSender getSender()
 	{
-		return sender;
+		return this.sender;
 	}
 
 	public String getInput()
 	{
-		return input;
+		return this.input;
 	}
 
 	public BlockPos getPos()
 	{
-		return pos;
+		return this.pos;
 	}
 
 	public boolean isHasTargetBlock()
 	{
-		return hasTargetBlock;
+		return this.hasTargetBlock;
 	}
 
 	public List<String> getCompletions()
 	{
-		return completions;
+		return this.completions;
 	}
 
 	public void addCompletion(String completion)
 	{
-		completions.add(completion);
+		this.completions.add(completion);
 	}
 }

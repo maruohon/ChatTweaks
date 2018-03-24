@@ -97,8 +97,8 @@ public class GuiNewChatExt extends GuiNewChat {
 				int colorIndex = -1;
 				int emoteIndex = 0;
 				for (ITextComponent chatLine : wrappedList) {
-					if (isChatOpen && this.getScrollPos() > 0) {
-						this.setIsScrolled(true);
+					if (isChatOpen && this.getScrollPosAccessor() > 0) {
+						this.setIsScrolledAccessor(true);
 						this.scroll(1);
 					}
 					String formattedText = chatLine.getFormattedText();
@@ -193,8 +193,8 @@ public class GuiNewChatExt extends GuiNewChat {
 
 				int maxVisibleLines = this.getLineCount();
 				int drawnLinesCount = 0;
-				for (int lineIdx = 0; lineIdx + this.getScrollPos() < this.wrappedChatLines.size() && lineIdx < maxVisibleLines; lineIdx++) {
-					WrappedChatLine chatLine = this.wrappedChatLines.get(lineIdx + this.getScrollPos());
+				for (int lineIdx = 0; lineIdx + this.getScrollPosAccessor() < this.wrappedChatLines.size() && lineIdx < maxVisibleLines; lineIdx++) {
+					WrappedChatLine chatLine = this.wrappedChatLines.get(lineIdx + this.getScrollPosAccessor());
 					int lifeTime = updateCounter - chatLine.timeCreated;
 					if (lifeTime < 200 || isChatOpen) {
 						int alpha = 255;
@@ -250,11 +250,11 @@ public class GuiNewChatExt extends GuiNewChat {
 					GlStateManager.translate(-3f, 0f, 0f);
 					int fullHeight = wrappedChatLinesCount * fontRenderer.FONT_HEIGHT + wrappedChatLinesCount;
 					int drawnHeight = drawnLinesCount * fontRenderer.FONT_HEIGHT + drawnLinesCount;
-					int scrollY = this.getScrollPos() * drawnHeight / wrappedChatLinesCount;
+					int scrollY = this.getScrollPosAccessor() * drawnHeight / wrappedChatLinesCount;
 					int scrollHeight = drawnHeight * drawnHeight / fullHeight;
 					if (fullHeight != drawnHeight) {
 						int alpha = scrollY > 0 ? 0xAA : 0x60;
-						int color = this.isScrolled() ? 0xCC3333 : 0x3333AA;
+						int color = this.isScrolledAccessor() ? 0xCC3333 : 0x3333AA;
 						drawRect(0, -scrollY, 2, -scrollY - scrollHeight, color + (alpha << 24));
 						drawRect(2, -scrollY, 1, -scrollY - scrollHeight, 0xCCCCCC + (alpha << 24));
 					}
@@ -296,7 +296,7 @@ public class GuiNewChatExt extends GuiNewChat {
 			int lineCount = Math.min(this.getLineCount(), this.wrappedChatLines.size());
 			int lineSpacing = Configs.Generic.LINE_SPACING.getValue();
 			if (x <= MathHelper.floor((float) this.getChatWidth() / this.getChatScale()) && y < (fontRenderer.FONT_HEIGHT + lineSpacing) * lineCount + lineCount) {
-				int clickedIndex = y / (fontRenderer.FONT_HEIGHT + lineSpacing) + this.getScrollPos();
+				int clickedIndex = y / (fontRenderer.FONT_HEIGHT + lineSpacing) + this.getScrollPosAccessor();
 				if (clickedIndex >= 0 && clickedIndex < this.wrappedChatLines.size()) {
 					WrappedChatLine chatLine = this.wrappedChatLines.get(clickedIndex);
 					int width = 0;
@@ -316,26 +316,26 @@ public class GuiNewChatExt extends GuiNewChat {
 
 	@Override
 	public void scroll(int amount) {
-		this.setScrollPos(Math.max(Math.min(this.getScrollPos() + amount, wrappedChatLines.size() - getLineCount()), 0));
+		this.setScrollPosAccessor(Math.max(Math.min(this.getScrollPosAccessor() + amount, wrappedChatLines.size() - getLineCount()), 0));
 
-		if (this.getScrollPos() == 0) {
-			this.setIsScrolled(false);
+		if (this.getScrollPosAccessor() == 0) {
+			this.setIsScrolledAccessor(false);
 		}
 	}
 
-	private boolean isScrolled() {
+	private boolean isScrolledAccessor() {
 		return ((IMixinGuiNewChat) (Object) this).getIsScrolled();
 	}
 
-	private void setIsScrolled(boolean isScrolled) {
+	private void setIsScrolledAccessor(boolean isScrolled) {
 		((IMixinGuiNewChat) (Object) this).setIsScrolled(isScrolled);
 	}
 
-	private int getScrollPos() {
+	private int getScrollPosAccessor() {
 		return ((IMixinGuiNewChat) (Object) this).getScrollPos();
 	}
 
-	private void setScrollPos(int scrollPos) {
+	private void setScrollPosAccessor(int scrollPos) {
 		((IMixinGuiNewChat) (Object) this).setScrollPos(scrollPos);
 	}
 }
