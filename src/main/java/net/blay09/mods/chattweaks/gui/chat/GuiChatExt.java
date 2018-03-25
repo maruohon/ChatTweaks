@@ -20,6 +20,7 @@ import net.blay09.mods.chattweaks.api.event.TabCompletionEvent;
 import net.blay09.mods.chattweaks.chat.ChatView;
 import net.blay09.mods.chattweaks.chat.MessageStyle;
 import net.blay09.mods.chattweaks.config.Configs;
+import net.blay09.mods.chattweaks.config.gui.ChatTweaksConfigGui;
 import net.blay09.mods.chattweaks.event.EventBus;
 import net.blay09.mods.chattweaks.gui.emotes.GuiButtonEmotes;
 import net.blay09.mods.chattweaks.gui.emotes.GuiOverlayEmotes;
@@ -86,7 +87,7 @@ public class GuiChatExt extends GuiChat {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 				//mc.displayGuiScreen(new GuiChatView(null, ChatViewManager.getActiveView()));
 			} else {
-				//mc.displayGuiScreen(new GuiFactory.ConfigGUI(this));
+				mc.displayGuiScreen(new ChatTweaksConfigGui());
 			}
 		} else if (button instanceof GuiButtonChatView) {
 			ChatViewManager.setActiveView(((GuiButtonChatView) button).getView());

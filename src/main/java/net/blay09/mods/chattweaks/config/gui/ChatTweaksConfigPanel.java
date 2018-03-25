@@ -44,6 +44,7 @@ public class ChatTweaksConfigPanel extends AbstractConfigPanel
 
         this.host = host;
 
+        this.clearOptions();
         this.createSubPanels();
 
         int buttonWidth = 300;
@@ -165,6 +166,7 @@ public class ChatTweaksConfigPanel extends AbstractConfigPanel
 
     private void createSubPanels()
     {
+        this.subPanels.clear();
         this.addSubPanel(new ConfigPanelGeneric(this));
         this.addSubPanel(new ConfigPanelEmotes(this));
         this.addSubPanel(new ConfigPanelTheme(this));
@@ -174,6 +176,11 @@ public class ChatTweaksConfigPanel extends AbstractConfigPanel
     {
         panel.addOptions(this.host);
         this.subPanels.add(panel);
+    }
+
+    public boolean isSubPanelActive()
+    {
+        return this.selectedSubPanel != null;
     }
 
     public void setSelectedSubPanel(int id)
