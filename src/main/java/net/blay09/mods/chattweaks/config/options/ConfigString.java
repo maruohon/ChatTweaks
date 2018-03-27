@@ -11,16 +11,10 @@ public class ConfigString extends ConfigBase
 
     public ConfigString(String name, String defaultValue, String comment)
     {
-        super(name, comment);
+        super(ConfigType.STRING, name, comment);
 
         this.defaultValue = defaultValue;
         this.value = defaultValue;
-    }
-
-    @Override
-    public ConfigType getType()
-    {
-        return ConfigType.STRING;
     }
 
     public String getValue()

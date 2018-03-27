@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -24,7 +25,7 @@ import net.blay09.mods.chattweaks.config.options.ConfigBoolean;
 import net.blay09.mods.chattweaks.config.options.ConfigColor;
 import net.blay09.mods.chattweaks.config.options.ConfigInteger;
 import net.blay09.mods.chattweaks.config.options.ConfigString;
-import net.blay09.mods.chattweaks.config.options.ConfigStringArray;
+import net.blay09.mods.chattweaks.config.options.ConfigStringList;
 import net.blay09.mods.chattweaks.reference.Reference;
 import net.blay09.mods.chattweaks.util.JsonUtils;
 import net.minecraft.client.Minecraft;
@@ -42,7 +43,7 @@ public class Configs
         public static final ConfigBoolean EMOTE_TAB_COMPLETION      = new ConfigBoolean("emoteTabCompletion", false, "Should emotes be considered in tab completion?");
         public static final ConfigBoolean HIDE_EMOTES_MENU          = new ConfigBoolean("hideEmotesMenu", false, "Set to true to hide the emote menu button in the chat.");
         public static final ConfigBoolean HILIGHT_NAME              = new ConfigBoolean("highlightName", false, "If set to true, mentions of your Minecraft IGN will be highlighted in chat.");
-        public static final ConfigStringArray HILIGHT_STRINGS       = new ConfigStringArray("highlightedWords", new String[0], "List of words that are highlighted in chat.");
+        public static final ConfigStringList HILIGHT_STRINGS        = new ConfigStringList("highlightedWords", ImmutableList.of(), "List of words that are highlighted in chat.");
         public static final ConfigInteger LINE_SPACING              = new ConfigInteger("lineSpacing", 0, "Spacing between chat lines");
         public static final ConfigBoolean PREFER_NEW_MESSAGES       = new ConfigBoolean("smartViewNavigation", true, "When navigating between views, prefer views with new messages.");
         public static final ConfigBoolean SHOW_NEW_MESSAGE_OVERLAY  = new ConfigBoolean("showNewMessages",  true, "Highlights views with new messages red even when chat is closed.");
@@ -80,9 +81,9 @@ public class Configs
         public static final ConfigBoolean TWITCH_SUBSCRIBER_EMOTES      = new ConfigBoolean("twitchSubscriberEmotes", true, "Should the Twitch Subscriber emotes (ex. geekPraise) be enabled?");
         public static final ConfigString TWITCH_SUBSCRIBER_EMOTE_REGEX  = new ConfigString("twitchSubscriberEmoteRegex", "[a-z0-9][a-z0-9]+[A-Z0-9].*", "The regex pattern to match for Twitch Subscriber Emotes to be included. By default includes all that follow prefixCode convention.");
         public static final ConfigBoolean BTTV_EMOTES                   = new ConfigBoolean("BTTVEmotes", true, "Should the BTTV emotes (ex. AngelThump) be enabled?");
-        public static final ConfigStringArray BTTV_EMOTE_CHANNELS       = new ConfigStringArray("BTTVEmoteChannels", new String[]{"ZeekDaGeek"}, "A list of channels to postInitLoad BTTV channel emotes from.");
+        public static final ConfigStringList BTTV_EMOTE_CHANNELS        = new ConfigStringList("BTTVEmoteChannels", ImmutableList.of("ZeekDaGeek"), "A list of channels to postInitLoad BTTV channel emotes from.");
         public static final ConfigBoolean FFZ_EMOTES                    = new ConfigBoolean("FFZEmotes", true, "Should the FrankerFaceZ emotes (ex. ZreknarF) be enabled?");
-        public static final ConfigStringArray FFZ_EMOTE_CHANNELS        = new ConfigStringArray("FFZEmoteChannels", new String[]{"tehbasshunter"}, "A list of channels to load FrankerFaceZ channel emotes from.");
+        public static final ConfigStringList FFZ_EMOTE_CHANNELS         = new ConfigStringList("FFZEmoteChannels", ImmutableList.of("tehbasshunter"), "A list of channels to load FrankerFaceZ channel emotes from.");
 
         public static final ImmutableList<ConfigBase> OPTIONS = ImmutableList.of(
                 BTTV_EMOTES,
@@ -233,7 +234,7 @@ public class Configs
             }
 
             try {
-                String[] bttvChannels = Emotes.BTTV_EMOTE_CHANNELS.getValue();
+                List<String> bttvChannels = Emotes.BTTV_EMOTE_CHANNELS.getValues();
                 for (String channel : bttvChannels) {
                     new BTTVChannelEmotes(channel);
                 }
@@ -250,7 +251,7 @@ public class Configs
             }
 
             try {
-                String[] ffzChannels = Emotes.FFZ_EMOTE_CHANNELS.getValue();
+                List<String> ffzChannels = Emotes.FFZ_EMOTE_CHANNELS.getValues();
                 for (String channel : ffzChannels) {
                     new FFZChannelEmotes(channel);
                 }

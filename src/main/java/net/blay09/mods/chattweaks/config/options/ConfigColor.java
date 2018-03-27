@@ -14,17 +14,11 @@ public class ConfigColor extends ConfigBase
 
     public ConfigColor(String name, String defaultValue, String comment)
     {
-        super(name, comment);
+        super(ConfigType.HEX_STRING, name, comment);
 
         this.defaultValue = defaultValue;
         this.hexString = defaultValue;
         this.color = getColor(defaultValue, 0);
-    }
-
-    @Override
-    public ConfigType getType()
-    {
-        return ConfigType.HEX_STRING;
     }
 
     public String getDefaultValue()

@@ -3,7 +3,7 @@ package net.blay09.mods.chattweaks.config.gui.button;
 import net.blay09.mods.chattweaks.config.options.ConfigOptionList;
 import net.minecraft.client.Minecraft;
 
-public class ConfigButtonOptionList extends ConfigButtonBase
+public class ConfigButtonOptionList extends ButtonBase
 {
     private final ConfigOptionList config;
 

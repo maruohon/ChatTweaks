@@ -11,16 +11,10 @@ public class ConfigBoolean extends ConfigBase
 
     public ConfigBoolean(String name, boolean defaultValue, String comment)
     {
-        super(name, comment);
+        super(ConfigType.BOOLEAN, name, comment);
 
         this.defaultValue = defaultValue;
         this.value = defaultValue;
-    }
-
-    @Override
-    public ConfigType getType()
-    {
-        return ConfigType.BOOLEAN;
     }
 
     public boolean getValue()

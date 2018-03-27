@@ -12,7 +12,7 @@ public class HighlightHandler implements IEventHandler<PrintChatMessageEvent>
 {
 	@Override
 	public void onEvent(PrintChatMessageEvent event) {
-		if (Configs.Generic.HILIGHT_NAME.getValue() == false && Configs.Generic.HILIGHT_STRINGS.getValue().length == 0) {
+		if (Configs.Generic.HILIGHT_NAME.getValue() == false && Configs.Generic.HILIGHT_STRINGS.getValues().size() == 0) {
 			return;
 		}
 
@@ -34,7 +34,7 @@ public class HighlightHandler implements IEventHandler<PrintChatMessageEvent>
 						event.getChatMessage().setBackgroundColor(Configs.Theme.BG_COLOR_HILIGHT.getColor());
 					}
 					else {
-						for (String highlight : Configs.Generic.HILIGHT_STRINGS.getValue()) {
+						for (String highlight : Configs.Generic.HILIGHT_STRINGS.getValues()) {
 							if (message.contains(highlight)) {
 								event.getChatMessage().setBackgroundColor(Configs.Theme.BG_COLOR_HILIGHT.getColor());
 								break;

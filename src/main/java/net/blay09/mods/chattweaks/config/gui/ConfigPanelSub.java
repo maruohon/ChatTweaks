@@ -4,33 +4,52 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.lwjgl.input.Keyboard;
 import com.mumfrey.liteloader.modconfig.AbstractConfigPanel;
 import com.mumfrey.liteloader.modconfig.ConfigPanelHost;
 import net.blay09.mods.chattweaks.config.Configs;
-import net.blay09.mods.chattweaks.config.gui.button.ConfigButtonBase;
+import net.blay09.mods.chattweaks.config.gui.button.ButtonActionListener;
+import net.blay09.mods.chattweaks.config.gui.button.ButtonBase;
+import net.blay09.mods.chattweaks.config.gui.button.ButtonEntry;
+import net.blay09.mods.chattweaks.config.gui.button.ButtonGeneric;
 import net.blay09.mods.chattweaks.config.gui.button.ConfigButtonBoolean;
 import net.blay09.mods.chattweaks.config.gui.button.ConfigButtonOptionList;
+import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ButtonListenerPanelSelection;
+import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ButtonListenerStringList;
+import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ConfigOptionListenerDirtyChecker;
 import net.blay09.mods.chattweaks.config.options.ConfigBase;
 import net.blay09.mods.chattweaks.config.options.ConfigBoolean;
 import net.blay09.mods.chattweaks.config.options.ConfigOptionList;
+import net.blay09.mods.chattweaks.config.options.ConfigStringList;
 import net.blay09.mods.chattweaks.config.options.ConfigType;
 import net.minecraft.client.resources.I18n;
 
 public abstract class ConfigPanelSub extends AbstractConfigPanel
 {
-    private final ChatTweaksConfigPanel parent;
+    protected final ButtonListenerStringList<ButtonBase> listenerStringList;
+    private final ChatTweaksConfigPanel parentPanel;
+    private final ConfigPanelSub parentSubPanel;
     private final IdentityHashMap<ConfigBase, ConfigTextField> textFields = new IdentityHashMap<>();
-    private final ConfigOptionListenerGeneric<ConfigButtonBase> listener = new ConfigOptionListenerGeneric<>();
-    private final List<ConfigButtonBase> buttons = new ArrayList<>();
+    private final ConfigOptionListenerDirtyChecker<ButtonBase> listenerDirtyChecker = new ConfigOptionListenerDirtyChecker<>();
+    private final List<ButtonEntry<?>> buttons = new ArrayList<>();
     private final List<HoverInfo> configComments = new ArrayList<>();
     private final String title;
 
     public ConfigPanelSub(String title, ChatTweaksConfigPanel parent)
     {
-        this.title = title;
-        this.parent = parent;
+        this(title, parent, null);
     }
+
+    public ConfigPanelSub(String title, ChatTweaksConfigPanel parent, @Nullable ConfigPanelSub parentSubPanel)
+    {
+        this.title = title;
+        this.parentPanel = parent;
+        this.parentSubPanel = parentSubPanel;
+        this.listenerStringList = new ButtonListenerStringList<>(parent);
+    }
+
+    protected abstract Collection<ConfigBase> getConfigs();
 
     @Override
     public String getPanelTitle()
@@ -43,10 +62,10 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
     {
         boolean dirty = false;
 
-        if (this.listener.isDirty())
+        if (this.listenerDirtyChecker.isDirty())
         {
             dirty = true;
-            this.listener.resetDirty();
+            this.listenerDirtyChecker.resetDirty();
         }
 
         dirty |= this.handleTextFields();
@@ -61,13 +80,11 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
     @Override
     public void mousePressed(ConfigPanelHost host, int mouseX, int mouseY, int mouseButton)
     {
-        for (ConfigButtonBase button : this.buttons)
+        for (ButtonEntry<?> entry : this.buttons)
         {
-            if (button.mousePressed(this.mc, mouseX, mouseY))
+            if (entry.mousePressed(this.mc, mouseX, mouseY, mouseButton))
             {
-                button.onMouseButtonClicked(mouseButton);
-                this.listener.actionPerformed(button);
-                // Don't call super if the button got handled
+                // Don't call super if the button press got handled
                 return;
             }
         }
@@ -75,9 +92,9 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
         super.mousePressed(host, mouseX, mouseY, mouseButton);
     }
 
-    protected <T extends ConfigButtonBase> void addButton(T button, ConfigOptionListener<T> listener)
+    protected <T extends ButtonBase> void addButton(T button, ButtonActionListener<T> listener)
     {
-        this.buttons.add(button);
+        this.buttons.add(new ButtonEntry<>(button, listener));
         this.addControl(button, listener);
     }
 
@@ -112,13 +129,6 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
         return dirty;
     }
 
-    protected abstract Collection<ConfigBase> getConfigs();
-
-    protected ConfigOptionListenerGeneric<ConfigButtonBase> getConfigListener()
-    {
-        return this.listener;
-    }
-
     @Override
     public void addOptions(ConfigPanelHost host)
     {
@@ -127,11 +137,13 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
         int x = 10;
         int y = 10;
         int configHeight = 20;
+        int buttonWidth = 204;
         int labelWidth = this.getMaxLabelWidth(this.getConfigs()) + 10;
+        int id = 0;
 
         for (ConfigBase config : this.getConfigs())
         {
-            this.addLabel(0, x, y + 7, labelWidth, 8, 0xFFFFFFFF, config.getName());
+            this.addLabel(id++, x, y + 7, labelWidth, 8, 0xFFFFFFFF, config.getName());
 
             String comment = config.getComment();
             ConfigType type = config.getType();
@@ -143,21 +155,29 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
 
             if (type == ConfigType.BOOLEAN)
             {
-                this.addButton(new ConfigButtonBoolean(0, x + labelWidth, y, 204, configHeight, (ConfigBoolean) config), this.listener);
+                this.addButton(new ConfigButtonBoolean(id++, x + labelWidth, y, buttonWidth, configHeight, (ConfigBoolean) config), this.listenerDirtyChecker);
             }
             else if (type == ConfigType.OPTION_LIST)
             {
-                this.addButton(new ConfigButtonOptionList(0, x + labelWidth, y, 204, configHeight, (ConfigOptionList) config), this.listener);
+                this.addButton(new ConfigButtonOptionList(id++, x + labelWidth, y, buttonWidth, configHeight, (ConfigOptionList) config), this.listenerDirtyChecker);
             }
             else if (type == ConfigType.STRING ||
                      type == ConfigType.HEX_STRING ||
                      type == ConfigType.INTEGER ||
                      type == ConfigType.DOUBLE)
             {
-                ConfigTextField field = this.addTextField(0, x + labelWidth, y + 1, 200, configHeight - 3);
+                ConfigTextField field = this.addTextField(id++, x + labelWidth, y + 1, buttonWidth - 4, configHeight - 3);
                 field.setText(config.getStringValue());
                 field.getNativeTextField().setMaxStringLength(128);
                 this.addTextField(config, field);
+            }
+            else if (type == ConfigType.STRING_LIST)
+            {
+                ConfigStringList configStringList = (ConfigStringList) config;
+                String panelTitle = this.getPanelTitle() + " - " + config.getName();
+                ConfigPanelSub panelStringList = new ConfigPanelStringList(configStringList, panelTitle, this.parentPanel, this);
+                ButtonListenerPanelSelection<ButtonGeneric> listener = new ButtonListenerPanelSelection<>(this.parentPanel, panelStringList);
+                this.addButton(new ButtonGeneric(id++, x + labelWidth, y, buttonWidth, configHeight, configStringList.getButtonDisplayString(34)), listener);
             }
 
             y += configHeight + 1;
@@ -220,20 +240,19 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
     {
         if (keyCode == Keyboard.KEY_ESCAPE)
         {
-            this.parent.setSelectedSubPanel(-1);
+            if (this.parentSubPanel != null)
+            {
+                this.parentPanel.setSelectedSubPanel(this.parentSubPanel);
+            }
+            else
+            {
+                this.parentPanel.setSelectedSubPanel(null);
+            }
+
             return;
         }
 
         super.keyPressed(host, keyChar, keyCode);
-    }
-
-    /**
-     * Returns true if some of the options in this panel were modified
-     * @return
-     */
-    public boolean hasModifications()
-    {
-        return false;
     }
 
     public static class HoverInfo

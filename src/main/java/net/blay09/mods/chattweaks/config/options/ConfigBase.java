@@ -5,16 +5,21 @@ import com.google.gson.JsonElement;
 
 public abstract class ConfigBase
 {
+    private final ConfigType type;
     private final String name;
     private String comment;
 
-    public ConfigBase(String name, String comment)
+    public ConfigBase(ConfigType type, String name, String comment)
     {
+        this.type = type;
         this.name = name;
         this.comment = comment;
     }
 
-    public abstract ConfigType getType();
+    public ConfigType getType()
+    {
+        return this.type;
+    }
 
     public String getName()
     {

@@ -4,14 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 import com.mumfrey.liteloader.modconfig.AbstractConfigPanel;
 import com.mumfrey.liteloader.modconfig.ConfigPanelHost;
+import net.blay09.mods.chattweaks.config.gui.button.ButtonGeneric;
+import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ButtonListenerPanelSelection;
 import net.blay09.mods.chattweaks.reference.Reference;
-import net.minecraft.client.gui.GuiButton;
 
 public class ChatTweaksConfigPanel extends AbstractConfigPanel
 {
     private final List<ConfigPanelSub> subPanels = new ArrayList<>();
     private ConfigPanelSub selectedSubPanel;
     private ConfigPanelHost host;
+
+    private void createSubPanels()
+    {
+        this.subPanels.clear();
+        this.addSubPanel(new ConfigPanelGeneric(this));
+        this.addSubPanel(new ConfigPanelEmotes(this));
+        this.addSubPanel(new ConfigPanelTheme(this));
+    }
 
     @Override
     public String getPanelTitle()
@@ -51,11 +60,12 @@ public class ChatTweaksConfigPanel extends AbstractConfigPanel
         int buttonHeight = 20;
         int x = host.getWidth() / 2 - buttonWidth / 2;
         int y = 10;
-        ButtonListenerPanelSelection<GuiButton> listener = new ButtonListenerPanelSelection<>(this);
 
         for (int i = 0; i < this.subPanels.size(); i++)
         {
-            this.addControl(new GuiButton(i, x, y, buttonWidth, buttonHeight, this.subPanels.get(i).getPanelTitle()), listener);
+            ConfigPanelSub panel = this.subPanels.get(i);
+            ButtonListenerPanelSelection<ButtonGeneric> listener = new ButtonListenerPanelSelection<>(this, panel);
+            this.addControl(new ButtonGeneric(i, x, y, buttonWidth, buttonHeight, panel.getPanelTitle()), listener);
             y += 21;
         }
     }
@@ -164,14 +174,6 @@ public class ChatTweaksConfigPanel extends AbstractConfigPanel
         }
     }
 
-    private void createSubPanels()
-    {
-        this.subPanels.clear();
-        this.addSubPanel(new ConfigPanelGeneric(this));
-        this.addSubPanel(new ConfigPanelEmotes(this));
-        this.addSubPanel(new ConfigPanelTheme(this));
-    }
-
     private void addSubPanel(ConfigPanelSub panel)
     {
         panel.addOptions(this.host);
@@ -185,35 +187,28 @@ public class ChatTweaksConfigPanel extends AbstractConfigPanel
 
     public void setSelectedSubPanel(int id)
     {
+        if (id >= 0 && id < this.subPanels.size())
+        {
+            this.setSelectedSubPanel(this.subPanels.get(id));
+        }
+        else
+        {
+            this.setSelectedSubPanel(null);
+        }
+    }
+
+    public void setSelectedSubPanel(ConfigPanelSub subPanel)
+    {
         if (this.selectedSubPanel != null)
         {
             this.selectedSubPanel.onPanelHidden();
         }
 
-        if (id >= 0 && id < this.subPanels.size())
-        {
-            this.selectedSubPanel = this.subPanels.get(id);
-            this.selectedSubPanel.onPanelShown(host);
-        }
-        else
-        {
-            this.selectedSubPanel = null;
-        }
-    }
+        this.selectedSubPanel = subPanel;
 
-    private class ButtonListenerPanelSelection<T extends GuiButton> implements ConfigOptionListener<T>
-    {
-        private final ChatTweaksConfigPanel mainPanel;
-
-        public ButtonListenerPanelSelection(ChatTweaksConfigPanel mainPanel)
+        if (this.selectedSubPanel != null)
         {
-            this.mainPanel = mainPanel;
-        }
-
-        @Override
-        public void actionPerformed(T control)
-        {
-            this.mainPanel.setSelectedSubPanel(control.id);
+            this.selectedSubPanel.onPanelShown(this.host);
         }
     }
 }

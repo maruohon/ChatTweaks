@@ -4,7 +4,7 @@ import net.blay09.mods.chattweaks.config.options.ConfigBoolean;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
 
-public class ConfigButtonBoolean extends ConfigButtonBase
+public class ConfigButtonBoolean extends ButtonBase
 {
     private final ConfigBoolean config;
 

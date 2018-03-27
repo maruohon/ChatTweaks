@@ -250,7 +250,7 @@ public class ChatTweaksConfigGui extends GuiScreen
 
         // Update and draw scroll bar
         this.scrollBar.setMaxValue(this.totalHeight - this.innerHeight);
-        this.scrollBar.drawScrollBar(mouseX, mouseY, partialTicks, this.width - MARGIN - 5, TOP, 5, this.innerHeight,
+        this.scrollBar.drawScrollBar(mouseX, mouseY, partialTicks, this.innerWidth + MARGIN - 5, TOP, 5, this.innerHeight,
                 Math.max(this.innerHeight, this.totalHeight));
     }
 

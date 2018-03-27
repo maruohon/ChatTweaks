@@ -11,16 +11,10 @@ public class ConfigOptionList extends ConfigBase
 
     public ConfigOptionList(String name, IConfigOptionListEntry defaultValue, String comment)
     {
-        super(name, comment);
+        super(ConfigType.OPTION_LIST, name, comment);
 
         this.defaultValue = defaultValue;
         this.value = defaultValue;
-    }
-
-    @Override
-    public ConfigType getType()
-    {
-        return ConfigType.OPTION_LIST;
     }
 
     public IConfigOptionListEntry getValue()

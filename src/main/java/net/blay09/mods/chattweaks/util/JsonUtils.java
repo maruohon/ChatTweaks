@@ -2,6 +2,8 @@ package net.blay09.mods.chattweaks.util;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -186,25 +188,25 @@ public class JsonUtils
     }
 
     @Nonnull
-    public static String[] getAsStringArray(JsonArray jsonArray)
+    public static List<String> getAsStringList(JsonArray jsonArray)
     {
         final int size = jsonArray.size();
-        String[] strArr = new String[size];
+        List<String> list = new ArrayList<>();
 
         for (int i = 0; i < size; i++)
         {
-            strArr[i] = jsonArray.get(i).getAsString();
+            list.add(jsonArray.get(i).getAsString());
         }
 
-        return strArr;
+        return list;
     }
 
     @Nonnull
-    public static JsonArray getAsJsonArray(String[] strArr)
+    public static JsonArray getAsJsonArray(List<String> list)
     {
         JsonArray jsonArray = new JsonArray();
 
-        for (String str : strArr)
+        for (String str : list)
         {
             jsonArray.add(str);
         }

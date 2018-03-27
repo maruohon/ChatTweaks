@@ -11,16 +11,10 @@ public class ConfigInteger extends ConfigBase
 
     public ConfigInteger(String name, int defaultValue, String comment)
     {
-        super(name, comment);
+        super(ConfigType.INTEGER, name, comment);
 
         this.defaultValue = defaultValue;
         this.value = defaultValue;
-    }
-
-    @Override
-    public ConfigType getType()
-    {
-        return ConfigType.INTEGER;
     }
 
     public int getValue()

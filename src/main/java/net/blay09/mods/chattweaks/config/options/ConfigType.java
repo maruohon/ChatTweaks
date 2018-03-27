@@ -6,7 +6,7 @@ public enum ConfigType
     INTEGER,
     DOUBLE,
     STRING,
-    STRING_ARRAY,
+    STRING_LIST,
     HEX_STRING,
     HOTKEY,
     OPTION_LIST;
