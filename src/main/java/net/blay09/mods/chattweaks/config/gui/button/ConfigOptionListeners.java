@@ -1,10 +1,10 @@
 package net.blay09.mods.chattweaks.config.gui.button;
 
 import java.util.List;
+import java.util.function.Supplier;
 import net.blay09.mods.chattweaks.config.gui.ChatTweaksConfigPanel;
-import net.blay09.mods.chattweaks.config.gui.ConfigPanelStringList;
+import net.blay09.mods.chattweaks.config.gui.ConfigPanelListBase;
 import net.blay09.mods.chattweaks.config.gui.ConfigPanelSub;
-import net.blay09.mods.chattweaks.config.options.ConfigStringList;
 
 public class ConfigOptionListeners
 {
@@ -81,30 +81,32 @@ public class ConfigOptionListeners
         }
     }
 
-    public static class ButtonListenerStringListAction<T extends ButtonBase> implements ButtonActionListener<T>
+    public static class ButtonListenerListAction<T extends ButtonBase, L> implements ButtonActionListener<T>
     {
-        private final ConfigPanelStringList panel;
+        private final ConfigPanelListBase<L> panel;
         private final Type type;
-        private final ConfigStringList config;
+        private final List<L> list;
+        private final Supplier<L> factory;
         private final int index;
 
-        public ButtonListenerStringListAction(Type type, int index, ConfigStringList config, ConfigPanelStringList panel)
+        public ButtonListenerListAction(Type type, int index, List<L> list, Supplier<L> factory, ConfigPanelListBase<L> panel)
         {
             this.type = type;
             this.index = index;
-            this.config = config;
+            this.list = list;
+            this.factory = factory;
             this.panel = panel;
         }
 
         @Override
         public void actionPerformed(T control)
         {
-            this.panel.saveFields();
-            List<String> list = this.config.getValues();
+            this.panel.saveChanges();
+            List<L> list = this.list;
 
             if (this.type == Type.ADD)
             {
-                list.add(this.index, "");
+                list.add(this.index, this.factory.get());
             }
             else if (type == Type.REMOVE)
             {
@@ -114,7 +116,7 @@ public class ConfigOptionListeners
             {
                 if (this.index > 0)
                 {
-                    String prev = list.get(this.index - 1);
+                    L prev = list.get(this.index - 1);
                     list.set(this.index - 1, list.get(this.index));
                     list.set(this.index, prev);
                 }
@@ -123,7 +125,7 @@ public class ConfigOptionListeners
             {
                 if (this.index < list.size() - 1)
                 {
-                    String next = list.get(this.index + 1);
+                    L next = list.get(this.index + 1);
                     list.set(this.index + 1, list.get(this.index));
                     list.set(this.index, next);
                 }

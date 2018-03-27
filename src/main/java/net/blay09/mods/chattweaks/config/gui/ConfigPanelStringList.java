@@ -1,27 +1,26 @@
 package net.blay09.mods.chattweaks.config.gui;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import org.lwjgl.input.Keyboard;
 import com.mumfrey.liteloader.modconfig.ConfigPanelHost;
 import net.blay09.mods.chattweaks.config.gui.button.ButtonGeneric;
-import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ButtonListenerStringListAction;
-import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ButtonListenerStringListAction.Type;
-import net.blay09.mods.chattweaks.config.options.ConfigBase;
+import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ButtonListenerListAction;
 import net.blay09.mods.chattweaks.config.options.ConfigStringList;
-import net.minecraft.util.text.TextFormatting;
 
-public class ConfigPanelStringList extends ConfigPanelSub
+public class ConfigPanelStringList extends ConfigPanelListBase<String>
 {
-    protected static final String BUTTON_LABEL_ADD = TextFormatting.DARK_GREEN + "+" + TextFormatting.RESET;
-    protected static final String BUTTON_LABEL_REMOVE = TextFormatting.DARK_RED + "-" + TextFormatting.RESET;
-    protected static final String BUTTON_LABEL_UP = TextFormatting.YELLOW + "^" + TextFormatting.RESET;
-    protected static final String BUTTON_LABEL_DOWN = TextFormatting.YELLOW + "v" + TextFormatting.RESET;
+    private static final Supplier<String> ENTRY_FACTORY = new Supplier<String>()
+    {
+        @Override
+        public String get()
+        {
+            return "";
+        }
+    };
     private final ConfigStringList config;
     private final List<ConfigTextField> textFields = new ArrayList<>();
-    private ConfigPanelHost host;
 
     public ConfigPanelStringList(ConfigStringList config, String title, ChatTweaksConfigPanel parent, ConfigPanelSub parentSub)
     {
@@ -31,10 +30,9 @@ public class ConfigPanelStringList extends ConfigPanelSub
     }
 
     @Override
-    protected Collection<ConfigBase> getConfigs()
+    protected List<String> getList()
     {
-        // Dummy - not used
-        return Collections.emptyList();
+        return this.config.getValues();
     }
 
     @Override
@@ -49,53 +47,32 @@ public class ConfigPanelStringList extends ConfigPanelSub
     public void clearOptions()
     {
         super.clearOptions();
-
         this.textFields.clear();
+    }
+
+    @Override
+    protected void createListEntry(int index, int x, int y, int width, int height)
+    {
+        String str = this.getList().get(index);
+        ConfigTextField field = this.createTextField(index, x, y + 1, width, height - 3, 256);
+        field.setText(str);
     }
 
     @Override
     public void addOptions(ConfigPanelHost host)
     {
-        this.clearOptions();
+        super.addOptions(host);
 
-        this.host = host;
-
-        int x = 10;
-        int y = 10;
-        int configHeight = 20;
-        int fieldWidth = 360;
-        final int size = this.config.getValues().size();
-        int id = 0;
         Keyboard.enableRepeatEvents(true);
-
-        for (int i = 0; i < size; i++)
-        {
-            String str = this.config.getValues().get(i);
-            ConfigTextField field = this.createTextField(i, x, y + 1, fieldWidth, configHeight - 3, 256);
-            field.setText(str);
-
-            this.addButton(new ButtonGeneric(id++, x + fieldWidth + 6, y, 20, 20, BUTTON_LABEL_ADD), this.createActionListener(Type.ADD, i));
-            this.addButton(new ButtonGeneric(id++, x + fieldWidth + 28, y, 20, 20, BUTTON_LABEL_REMOVE), this.createActionListener(Type.REMOVE, i));
-            this.addButton(new ButtonGeneric(id++, x + fieldWidth + 50, y, 20, 20, BUTTON_LABEL_UP), this.createActionListener(Type.MOVE_UP, i));
-            this.addButton(new ButtonGeneric(id++, x + fieldWidth + 72, y, 20, 20, BUTTON_LABEL_DOWN), this.createActionListener(Type.MOVE_DOWN, i));
-
-            y += configHeight + 1;
-        }
-
-        this.addButton(new ButtonGeneric(id++, x + fieldWidth + 6, y, 20, 20, BUTTON_LABEL_ADD), this.createActionListener(Type.ADD, size));
     }
 
-    private ButtonListenerStringListAction<ButtonGeneric> createActionListener(ButtonListenerStringListAction.Type type, int index)
+    protected ButtonListenerListAction<ButtonGeneric, String> createActionListener(ButtonListenerListAction.Type type, int index)
     {
-        return new ButtonListenerStringListAction<>(type, index, this.config, this);
+        return new ButtonListenerListAction<>(type, index, this.getList(), ENTRY_FACTORY, this);
     }
 
-    public void reCreateOptions()
-    {
-        this.addOptions(this.host);
-    }
-
-    public void saveFields()
+    @Override
+    public void saveChanges()
     {
         this.handleTextFields();
     }

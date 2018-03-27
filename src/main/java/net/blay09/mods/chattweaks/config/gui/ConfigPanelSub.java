@@ -28,7 +28,7 @@ import net.minecraft.client.resources.I18n;
 public abstract class ConfigPanelSub extends AbstractConfigPanel
 {
     protected final ButtonListenerStringList<ButtonBase> listenerStringList;
-    private final ChatTweaksConfigPanel parentPanel;
+    protected final ChatTweaksConfigPanel parentPanel;
     private final ConfigPanelSub parentSubPanel;
     private final IdentityHashMap<ConfigBase, ConfigTextField> textFields = new IdentityHashMap<>();
     private final ConfigOptionListenerDirtyChecker<ButtonBase> listenerDirtyChecker = new ConfigOptionListenerDirtyChecker<>();

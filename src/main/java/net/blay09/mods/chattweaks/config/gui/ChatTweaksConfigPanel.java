@@ -20,6 +20,7 @@ public class ChatTweaksConfigPanel extends AbstractConfigPanel
         this.addSubPanel(new ConfigPanelGeneric(this));
         this.addSubPanel(new ConfigPanelEmotes(this));
         this.addSubPanel(new ConfigPanelTheme(this));
+        this.addSubPanel(new ConfigPanelViews(this));
     }
 
     @Override
