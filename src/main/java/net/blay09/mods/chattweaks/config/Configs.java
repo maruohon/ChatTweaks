@@ -39,7 +39,7 @@ public class Configs
     public static class Generic
     {
         public static final ConfigBoolean ALTERNATE_BACKGROUND      = new ConfigBoolean("alternateBackgroundColor", true, "Should uneven lines alternate their background color for easier reading?");
-        public static final ConfigBoolean CHAT_TEXT_OPACITY         = new ConfigBoolean("chatTextFullOpacity",  true, "Vanilla Minecraft makes the text in chat transparent too, when opacity is set. Set this to false to restore that behaviour.");
+        public static final ConfigBoolean CHAT_TEXT_OPACITY         = new ConfigBoolean("chatTextFullOpacity",  true, "Vanilla Minecraft makes the text in chat transparent too,\nwhen opacity is set. Set this to false to restore that behaviour.");
         public static final ConfigBoolean EMOTE_TAB_COMPLETION      = new ConfigBoolean("emoteTabCompletion", false, "Should emotes be considered in tab completion?");
         public static final ConfigBoolean HIDE_EMOTES_MENU          = new ConfigBoolean("hideEmotesMenu", false, "Set to true to hide the emote menu button in the chat.");
         public static final ConfigBoolean HILIGHT_NAME              = new ConfigBoolean("highlightName", false, "If set to true, mentions of your Minecraft IGN will be highlighted in chat.");
@@ -79,7 +79,7 @@ public class Configs
         public static final ConfigBoolean INCLUDE_TWITCH_SMILEYS        = new ConfigBoolean("includeTwitchSmileys", false, "Should smileys (ex. :-D) be included with the Twitch Global Emotes?");
         public static final ConfigBoolean TWITCH_GLOBAL_EMOTES          = new ConfigBoolean("twitchGlobalEmotes", true, "Should the Twitch Global emotes (ex. Kappa) be enabled?");
         public static final ConfigBoolean TWITCH_SUBSCRIBER_EMOTES      = new ConfigBoolean("twitchSubscriberEmotes", true, "Should the Twitch Subscriber emotes (ex. geekPraise) be enabled?");
-        public static final ConfigString TWITCH_SUBSCRIBER_EMOTE_REGEX  = new ConfigString("twitchSubscriberEmoteRegex", "[a-z0-9][a-z0-9]+[A-Z0-9].*", "The regex pattern to match for Twitch Subscriber Emotes to be included. By default includes all that follow prefixCode convention.");
+        public static final ConfigString TWITCH_SUBSCRIBER_EMOTE_REGEX  = new ConfigString("twitchSubscriberEmoteRegex", "[a-z0-9][a-z0-9]+[A-Z0-9].*", "The regex pattern to match for Twitch Subscriber Emotes to be included.\nBy default includes all that follow prefixCode convention.");
         public static final ConfigBoolean BTTV_EMOTES                   = new ConfigBoolean("BTTVEmotes", true, "Should the BTTV emotes (ex. AngelThump) be enabled?");
         public static final ConfigStringList BTTV_EMOTE_CHANNELS        = new ConfigStringList("BTTVEmoteChannels", ImmutableList.of("ZeekDaGeek"), "A list of channels to postInitLoad BTTV channel emotes from.");
         public static final ConfigBoolean FFZ_EMOTES                    = new ConfigBoolean("FFZEmotes", true, "Should the FrankerFaceZ emotes (ex. ZreknarF) be enabled?");

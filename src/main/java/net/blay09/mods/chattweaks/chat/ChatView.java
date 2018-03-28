@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -37,7 +36,7 @@ public class ChatView {
 	private String filterPattern = "";
 	private String outputFormat = "$0";
 	private MessageStyle messageStyle = MessageStyle.Chat;
-	private String outgoingPrefix;
+	private String outgoingPrefix = "";
 	private boolean isExclusive;
 	private boolean isMuted;
 
@@ -66,7 +65,7 @@ public class ChatView {
 		view.setFilterPattern(jsonView.has("filterPattern") ? jsonView.get("filterPattern").getAsString() : "");
 		view.setOutputFormat(jsonView.get("outputFormat").getAsString());
 		view.setMessageStyle(MessageStyle.valueOf(jsonView.get("style").getAsString()));
-		view.setOutgoingPrefix(jsonView.has("outgoingPrefix") ? jsonView.get("outgoingPrefix").getAsString() : null);
+		view.setOutgoingPrefix(jsonView.has("outgoingPrefix") ? jsonView.get("outgoingPrefix").getAsString() : "");
 		view.setExclusive(jsonView.get("isExclusive").getAsBoolean());
 		view.setMuted(jsonView.get("isMuted").getAsBoolean());
 
@@ -265,6 +264,14 @@ public class ChatView {
 		channels.add(channel);
 	}
 
+	public void removeChannel(ChatChannel channel) {
+		channels.remove(channel);
+	}
+
+	public void clearChannels() {
+		channels.clear();
+	}
+
 	public Collection<ChatChannel> getChannels() {
 		return channels;
 	}
@@ -325,12 +332,11 @@ public class ChatView {
 		this.isMuted = isMuted;
 	}
 
-	@Nullable
 	public String getOutgoingPrefix() {
 		return outgoingPrefix;
 	}
 
-	public void setOutgoingPrefix(@Nullable String outgoingPrefix) {
+	public void setOutgoingPrefix(String outgoingPrefix) {
 		this.outgoingPrefix = outgoingPrefix;
 	}
 

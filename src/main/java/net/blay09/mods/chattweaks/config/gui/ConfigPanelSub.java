@@ -159,7 +159,8 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
             }
             else if (type == ConfigType.OPTION_LIST)
             {
-                this.addButton(new ConfigButtonOptionList(id++, x + labelWidth, y, buttonWidth, configHeight, (ConfigOptionList) config), this.listenerDirtyChecker);
+                ConfigButtonOptionList<?> button = new ConfigButtonOptionList<>(id++, x + labelWidth, y, buttonWidth, configHeight, (ConfigOptionList<?>) config);
+                this.addButton(button, this.listenerDirtyChecker);
             }
             else if (type == ConfigType.STRING ||
                      type == ConfigType.HEX_STRING ||
@@ -200,7 +201,7 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
         {
             if (label.isMouseOver(mouseX, mouseY))
             {
-                this.drawHoveringText(label.getLines(), label.x, label.y + 30);
+                this.drawHoveringText(label.getLines(), mouseX + 6, mouseY + 10);
                 break;
             }
         }

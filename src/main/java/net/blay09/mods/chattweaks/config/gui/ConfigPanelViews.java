@@ -25,15 +25,21 @@ public class ConfigPanelViews extends ConfigPanelListBase<ChatView>
     public ConfigPanelViews(ChatTweaksConfigPanel parent)
     {
         super("Views", parent, null);
-
-        this.list.clear();
-        this.list.addAll(ChatViewManager.getViews());
     }
 
     @Override
     protected List<ChatView> getList()
     {
         return this.list;
+    }
+
+    @Override
+    public void clearOptions()
+    {
+        this.list.clear();
+        this.list.addAll(ChatViewManager.getViews());
+
+        super.clearOptions();
     }
 
     @Override
@@ -84,10 +90,13 @@ public class ConfigPanelViews extends ConfigPanelListBase<ChatView>
     @Override
     protected void createListEntry(int index, int x, int y, int width, int height)
     {
-        ChatView view = this.getList().get(index);
-        String label = view.getName() + TextFormatting.AQUA + " [" + view.getMessageStyle().toString() + "]" + TextFormatting.RESET;
-        ConfigPanelSub panelViewSettings = new ConfigPanelViewSettings(this.parentPanel, this, view.getName());
-        ButtonListenerPanelSelection<ButtonGeneric> listener = new ButtonListenerPanelSelection<>(this.parentPanel, panelViewSettings);
-        this.addButton(new ButtonGeneric(index, x, y, 360, 20, label), listener);
+        if (index < this.list.size() && this.list.get(index) != null)
+        {
+            ChatView view = this.list.get(index);
+            String label = view.getName() + TextFormatting.AQUA + " [" + view.getMessageStyle().toString() + "]" + TextFormatting.RESET;
+            ConfigPanelSub panelViewSettings = new ConfigPanelViewSettings(this.parentPanel, this, view);
+            ButtonListenerPanelSelection<ButtonGeneric> listener = new ButtonListenerPanelSelection<>(this.parentPanel, panelViewSettings);
+            this.addButton(new ButtonGeneric(index, x, y, 360, 20, label), listener);
+        }
     }
 }

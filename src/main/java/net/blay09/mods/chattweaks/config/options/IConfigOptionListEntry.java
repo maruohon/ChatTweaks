@@ -1,6 +1,6 @@
 package net.blay09.mods.chattweaks.config.options;
 
-public interface IConfigOptionListEntry
+public interface IConfigOptionListEntry<T extends IConfigOptionListEntry<T>>
 {
     String getStringValue();
 
@@ -8,7 +8,7 @@ public interface IConfigOptionListEntry
 
     int getOrdinalValue();
 
-    IConfigOptionListEntry cycle(boolean forward);
+    T cycle(boolean forward);
 
-    IConfigOptionListEntry fromString(String value);
+    T fromString(String value);
 }

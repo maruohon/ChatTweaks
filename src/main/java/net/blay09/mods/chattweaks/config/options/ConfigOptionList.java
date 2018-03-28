@@ -4,12 +4,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import net.blay09.mods.chattweaks.LiteModChatTweaks;
 
-public class ConfigOptionList extends ConfigBase
+public class ConfigOptionList<T extends IConfigOptionListEntry<T>> extends ConfigBase
 {
-    private final IConfigOptionListEntry defaultValue;
-    private IConfigOptionListEntry value;
+    private final T defaultValue;
+    private T value;
 
-    public ConfigOptionList(String name, IConfigOptionListEntry defaultValue, String comment)
+    public ConfigOptionList(String name, T defaultValue, String comment)
     {
         super(ConfigType.OPTION_LIST, name, comment);
 
@@ -17,17 +17,17 @@ public class ConfigOptionList extends ConfigBase
         this.value = defaultValue;
     }
 
-    public IConfigOptionListEntry getValue()
+    public T getValue()
     {
         return this.value;
     }
 
-    public IConfigOptionListEntry getDefaultValue()
+    public T getDefaultValue()
     {
         return this.defaultValue;
     }
 
-    public void setValue(IConfigOptionListEntry value)
+    public void setValue(T value)
     {
         this.value = value;
     }

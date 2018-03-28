@@ -13,6 +13,7 @@ chattweaks:gui.chat.tooltipTwitchPrimeEmotes=Twitch Prime
 
 chattweaks:gui.confirm.optionalModuleRequired=You need to install an optional module for %s functionality:
 chattweaks:gui.confirm.optionalModuleInstall=Please install the additional mod and restart your game.
+chattweaks:gui.error.button.chat_views.no_channels=Warning: No channels selected
 
 chattweaks:config.channels.available=available
 chattweaks:config.channels.selected=selected

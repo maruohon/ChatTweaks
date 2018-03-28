@@ -1,13 +1,14 @@
 package net.blay09.mods.chattweaks.config.gui.button;
 
 import net.blay09.mods.chattweaks.config.options.ConfigOptionList;
+import net.blay09.mods.chattweaks.config.options.IConfigOptionListEntry;
 import net.minecraft.client.Minecraft;
 
-public class ConfigButtonOptionList extends ButtonBase
+public class ConfigButtonOptionList<T extends IConfigOptionListEntry<T>> extends ButtonBase
 {
-    private final ConfigOptionList config;
+    private final ConfigOptionList<T> config;
 
-    public ConfigButtonOptionList(int id, int x, int y, int width, int height, ConfigOptionList config)
+    public ConfigButtonOptionList(int id, int x, int y, int width, int height, ConfigOptionList<T> config)
     {
         super(id, x, y, width, height);
         this.config = config;
