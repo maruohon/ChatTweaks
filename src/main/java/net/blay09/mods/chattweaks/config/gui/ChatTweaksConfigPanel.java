@@ -11,8 +11,14 @@ import net.blay09.mods.chattweaks.reference.Reference;
 public class ChatTweaksConfigPanel extends AbstractConfigPanel
 {
     private final List<ConfigPanelSub> subPanels = new ArrayList<>();
+    private static final List<IConfigPanelFactory> SUB_PANEL_FACTORIES = new ArrayList<>();
     private ConfigPanelSub selectedSubPanel;
     private ConfigPanelHost host;
+
+    public static void registerSubPanelFactory(IConfigPanelFactory factory)
+    {
+        SUB_PANEL_FACTORIES.add(factory);
+    }
 
     private void createSubPanels()
     {
@@ -21,6 +27,11 @@ public class ChatTweaksConfigPanel extends AbstractConfigPanel
         this.addSubPanel(new ConfigPanelEmotes(this));
         this.addSubPanel(new ConfigPanelTheme(this));
         this.addSubPanel(new ConfigPanelViews(this));
+
+        for (IConfigPanelFactory factory : SUB_PANEL_FACTORIES)
+        {
+            this.addSubPanel(factory.createConfigPanel(this));
+        }
     }
 
     @Override

@@ -51,7 +51,7 @@ public class LiteModChatTweaks implements LiteMod, Configurable, InitCompleteLis
     public static final Logger logger = LogManager.getLogger(Reference.MOD_ID);
 
     // FIXME LiteLoader port
-    public static final KeyBinding KEY_SWITCH_CHAT_VIEW = new KeyBinding("key.chattweaks.switch_chat_view", Keyboard.KEY_TAB, "key.categories.chattweaks");
+    public static final KeyBinding KEY_SWITCH_CHAT_VIEW = new KeyBinding("key.chattweaks.switch_chat_view", Keyboard.KEY_C, "key.categories.chattweaks");
 
     public static String configDirPath;
     private static LiteModChatTweaks instance;

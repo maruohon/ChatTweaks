@@ -81,8 +81,10 @@ public class Configs
         public static final ConfigBoolean TWITCH_SUBSCRIBER_EMOTES      = new ConfigBoolean("twitchSubscriberEmotes", true, "Should the Twitch Subscriber emotes (ex. geekPraise) be enabled?");
         public static final ConfigString TWITCH_SUBSCRIBER_EMOTE_REGEX  = new ConfigString("twitchSubscriberEmoteRegex", "[a-z0-9][a-z0-9]+[A-Z0-9].*", "The regex pattern to match for Twitch Subscriber Emotes to be included.\nBy default includes all that follow prefixCode convention.");
         public static final ConfigBoolean BTTV_EMOTES                   = new ConfigBoolean("BTTVEmotes", true, "Should the BTTV emotes (ex. AngelThump) be enabled?");
+        public static final ConfigBoolean BTTV_CHANNEL_EMOTES           = new ConfigBoolean("BTTVChannelEmotes", false, "Should BTTV channel emotes be enabled?");
         public static final ConfigStringList BTTV_EMOTE_CHANNELS        = new ConfigStringList("BTTVEmoteChannels", ImmutableList.of("ZeekDaGeek"), "A list of channels to postInitLoad BTTV channel emotes from.");
         public static final ConfigBoolean FFZ_EMOTES                    = new ConfigBoolean("FFZEmotes", true, "Should the FrankerFaceZ emotes (ex. ZreknarF) be enabled?");
+        public static final ConfigBoolean FFZ_CHANNEL_EMOTES            = new ConfigBoolean("FFZChannelEmotes", false, "Should the FrankerFaceZ channel emotes be enabled?");
         public static final ConfigStringList FFZ_EMOTE_CHANNELS         = new ConfigStringList("FFZEmoteChannels", ImmutableList.of("tehbasshunter"), "A list of channels to load FrankerFaceZ channel emotes from.");
 
         public static final ImmutableList<ConfigBase> OPTIONS = ImmutableList.of(
@@ -128,22 +130,6 @@ public class Configs
         //InputEventHandler.updateUsedKeys(); // TODO
     }
 
-    private static void readOptions(JsonObject root, String category, ImmutableList<ConfigBase> options)
-    {
-        JsonObject obj = JsonUtils.getNestedObject(root, category, false);
-
-        if (obj != null)
-        {
-            for (ConfigBase option : options)
-            {
-                if (obj.has(option.getName()))
-                {
-                    option.setValueFromJsonElement(obj.get(option.getName()));
-                }
-            }
-        }
-    }
-
     public static void save()
     {
         File dir = LiteLoader.getCommonConfigFolder();
@@ -187,7 +173,23 @@ public class Configs
         }
     }
 
-    private static void writeOptions(JsonObject root, String category, ImmutableList<ConfigBase> options)
+    public static void readOptions(JsonObject root, String category, ImmutableList<ConfigBase> options)
+    {
+        JsonObject obj = JsonUtils.getNestedObject(root, category, false);
+
+        if (obj != null)
+        {
+            for (ConfigBase option : options)
+            {
+                if (obj.has(option.getName()))
+                {
+                    option.setValueFromJsonElement(obj.get(option.getName()));
+                }
+            }
+        }
+    }
+
+    public static void writeOptions(JsonObject root, String category, ImmutableList<ConfigBase> options)
     {
         JsonObject obj = JsonUtils.getNestedObject(root, category, true);
 
@@ -233,13 +235,16 @@ public class Configs
                 LiteModChatTweaks.logger.error("Failed to load BetterTTV emotes: ", e);
             }
 
-            try {
-                List<String> bttvChannels = Emotes.BTTV_EMOTE_CHANNELS.getValues();
-                for (String channel : bttvChannels) {
-                    new BTTVChannelEmotes(channel);
+            if (Emotes.BTTV_CHANNEL_EMOTES.getValue())
+            {
+                try {
+                    List<String> bttvChannels = Emotes.BTTV_EMOTE_CHANNELS.getValues();
+                    for (String channel : bttvChannels) {
+                        new BTTVChannelEmotes(channel);
+                    }
+                } catch (Exception e) {
+                    LiteModChatTweaks.logger.error("Failed to load BetterTTV channel emotes: ", e);
                 }
-            } catch (Exception e) {
-                LiteModChatTweaks.logger.error("Failed to load BetterTTV channel emotes: ", e);
             }
 
             try {
@@ -250,13 +255,16 @@ public class Configs
                 LiteModChatTweaks.logger.error("Failed to load FrankerFaceZ emotes: ", e);
             }
 
-            try {
-                List<String> ffzChannels = Emotes.FFZ_EMOTE_CHANNELS.getValues();
-                for (String channel : ffzChannels) {
-                    new FFZChannelEmotes(channel);
+            if (Emotes.FFZ_CHANNEL_EMOTES.getValue())
+            {
+                try {
+                    List<String> ffzChannels = Emotes.FFZ_EMOTE_CHANNELS.getValues();
+                    for (String channel : ffzChannels) {
+                        new FFZChannelEmotes(channel);
+                    }
+                } catch (Exception e) {
+                    LiteModChatTweaks.logger.error("Failed to load FrankerFaceZ channel emotes: ", e);
                 }
-            } catch (Exception e) {
-                LiteModChatTweaks.logger.error("Failed to load FrankerFaceZ channel emotes: ", e);
             }
 
             try {

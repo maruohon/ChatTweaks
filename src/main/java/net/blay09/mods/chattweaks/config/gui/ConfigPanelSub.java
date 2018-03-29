@@ -35,6 +35,7 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
     private final List<ButtonEntry<?>> buttons = new ArrayList<>();
     private final List<HoverInfo> configComments = new ArrayList<>();
     private final String title;
+    protected int nextElementY;
 
     public ConfigPanelSub(String title, ChatTweaksConfigPanel parent)
     {
@@ -183,6 +184,8 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
 
             y += configHeight + 1;
         }
+
+        this.nextElementY = y;
     }
 
     @Override

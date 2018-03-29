@@ -11,8 +11,6 @@ import net.blay09.mods.chattweaks.chat.ChatView;
 import net.blay09.mods.chattweaks.chat.MessageStyle;
 import net.blay09.mods.chattweaks.config.gui.button.ButtonBase;
 import net.blay09.mods.chattweaks.config.gui.button.ButtonGeneric;
-import net.blay09.mods.chattweaks.config.gui.button.ConfigButtonBoolean;
-import net.blay09.mods.chattweaks.config.gui.button.ConfigButtonOptionList;
 import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ButtonListenerPanelSelection;
 import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ConfigOptionListenerDirtyChecker;
 import net.blay09.mods.chattweaks.config.options.ConfigBase;
@@ -20,7 +18,6 @@ import net.blay09.mods.chattweaks.config.options.ConfigBoolean;
 import net.blay09.mods.chattweaks.config.options.ConfigOptionList;
 import net.blay09.mods.chattweaks.config.options.ConfigString;
 import net.blay09.mods.chattweaks.config.options.ConfigStringList;
-import net.blay09.mods.chattweaks.config.options.ConfigType;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 
@@ -81,7 +78,7 @@ public class ConfigPanelViewSettings extends ConfigPanelSub
             this.listenerDirtyChecker.resetDirty();
         }
 
-        // This reads the textField contents back to the ConfigBase insatnces
+        // This reads the textField contents back to the ConfigBase instances
         dirty |= this.handleTextFields();
 
         this.view.setExclusive(this.exclusive.getValue());
@@ -108,46 +105,7 @@ public class ConfigPanelViewSettings extends ConfigPanelSub
     @Override
     public void addOptions(ConfigPanelHost host)
     {
-        this.clearOptions();
-
-        int x = 10;
-        int y = 10;
-        int configHeight = 20;
-        int buttonWidth = 204;
-        int labelWidth = this.getMaxLabelWidth(this.getConfigs()) + 10;
-        int id = 0;
-
-        for (ConfigBase config : this.getConfigs())
-        {
-            this.addLabel(id++, x, y + 7, labelWidth, 8, 0xFFFFFFFF, config.getName());
-
-            String comment = config.getComment();
-            ConfigType type = config.getType();
-
-            if (comment != null)
-            {
-                this.addConfigComment(x, y + 2, labelWidth, 10, comment);
-            }
-
-            if (type == ConfigType.BOOLEAN)
-            {
-                this.addButton(new ConfigButtonBoolean(id++, x + labelWidth, y, buttonWidth, configHeight, (ConfigBoolean) config), this.listenerDirtyChecker);
-            }
-            else if (type == ConfigType.OPTION_LIST)
-            {
-                ConfigButtonOptionList<?> button = new ConfigButtonOptionList<>(id++, x + labelWidth, y, buttonWidth, configHeight, (ConfigOptionList<?>) config);
-                this.addButton(button, this.listenerDirtyChecker);
-            }
-            else if (type == ConfigType.STRING)
-            {
-                ConfigTextField field = this.addTextField(id++, x + labelWidth, y + 1, buttonWidth - 4, configHeight - 3);
-                field.setText(config.getStringValue());
-                field.getNativeTextField().setMaxStringLength(128);
-                this.addTextField(config, field);
-            }
-
-            y += configHeight + 1;
-        }
+        super.addOptions(host);
 
         List<String> list = new ArrayList<>();
 
@@ -173,6 +131,10 @@ public class ConfigPanelViewSettings extends ConfigPanelSub
             label = ConfigStringList.getClampedDisplayStringOf(list, 34, "[ ", " ]");
         }
 
-        this.addButton(new ButtonGeneric(id++, x + labelWidth, y, 204, 20, label), listener);
+        int id = this.getConfigs().size();
+        int x = 10;
+        int labelWidth = this.getMaxLabelWidth(this.getConfigs()) + 10;
+        this.addLabel(id++, x, this.nextElementY + 7, labelWidth, 8, 0xFFFFFFFF, "Channels");
+        this.addButton(new ButtonGeneric(id, x + labelWidth, this.nextElementY, 204, 20, label), listener);
     }
 }

@@ -16,11 +16,19 @@ public abstract class ConfigPanelListBase<T> extends ConfigPanelSub
     protected static final String BUTTON_LABEL_REMOVE = TextFormatting.DARK_RED + "-" + TextFormatting.RESET;
     protected static final String BUTTON_LABEL_UP = TextFormatting.YELLOW + "^" + TextFormatting.RESET;
     protected static final String BUTTON_LABEL_DOWN = TextFormatting.YELLOW + "v" + TextFormatting.RESET;
+    protected final boolean canReorder;
     protected ConfigPanelHost host;
 
     public ConfigPanelListBase(String title, ChatTweaksConfigPanel parent, ConfigPanelSub parentSubPanel)
     {
+        this(title, parent, parentSubPanel, true);
+    }
+
+    public ConfigPanelListBase(String title, ChatTweaksConfigPanel parent, ConfigPanelSub parentSubPanel, boolean canReorder)
+    {
         super(title, parent, parentSubPanel);
+
+        this.canReorder = canReorder;
     }
 
     protected abstract List<T> getList();
@@ -65,8 +73,12 @@ public abstract class ConfigPanelListBase<T> extends ConfigPanelSub
 
             this.addButton(new ButtonGeneric(id++, x + fieldWidth + 6, y, 20, 20, BUTTON_LABEL_ADD), this.createActionListener(Type.ADD, i));
             this.addButton(new ButtonGeneric(id++, x + fieldWidth + 28, y, 20, 20, BUTTON_LABEL_REMOVE), this.createActionListener(Type.REMOVE, i));
-            this.addButton(new ButtonGeneric(id++, x + fieldWidth + 50, y, 20, 20, BUTTON_LABEL_UP), this.createActionListener(Type.MOVE_UP, i));
-            this.addButton(new ButtonGeneric(id++, x + fieldWidth + 72, y, 20, 20, BUTTON_LABEL_DOWN), this.createActionListener(Type.MOVE_DOWN, i));
+
+            if (this.canReorder)
+            {
+                this.addButton(new ButtonGeneric(id++, x + fieldWidth + 50, y, 20, 20, BUTTON_LABEL_UP), this.createActionListener(Type.MOVE_UP, i));
+                this.addButton(new ButtonGeneric(id++, x + fieldWidth + 72, y, 20, 20, BUTTON_LABEL_DOWN), this.createActionListener(Type.MOVE_DOWN, i));
+            }
 
             y += configHeight + 1;
         }
