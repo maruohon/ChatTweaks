@@ -58,15 +58,20 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
         return this.title;
     }
 
+    protected ConfigOptionListenerDirtyChecker<ButtonBase> getButtonListener()
+    {
+        return this.listenerDirtyChecker;
+    }
+
     @Override
     public void onPanelHidden()
     {
         boolean dirty = false;
 
-        if (this.listenerDirtyChecker.isDirty())
+        if (this.getButtonListener().isDirty())
         {
             dirty = true;
-            this.listenerDirtyChecker.resetDirty();
+            this.getButtonListener().resetDirty();
         }
 
         dirty |= this.handleTextFields();
@@ -156,12 +161,12 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
 
             if (type == ConfigType.BOOLEAN)
             {
-                this.addButton(new ConfigButtonBoolean(id++, x + labelWidth, y, buttonWidth, configHeight, (ConfigBoolean) config), this.listenerDirtyChecker);
+                this.addButton(new ConfigButtonBoolean(id++, x + labelWidth, y, buttonWidth, configHeight, (ConfigBoolean) config), this.getButtonListener());
             }
             else if (type == ConfigType.OPTION_LIST)
             {
                 ConfigButtonOptionList<?> button = new ConfigButtonOptionList<>(id++, x + labelWidth, y, buttonWidth, configHeight, (ConfigOptionList<?>) config);
-                this.addButton(button, this.listenerDirtyChecker);
+                this.addButton(button, this.getButtonListener());
             }
             else if (type == ConfigType.STRING ||
                      type == ConfigType.HEX_STRING ||

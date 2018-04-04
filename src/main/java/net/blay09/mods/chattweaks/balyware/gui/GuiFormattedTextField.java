@@ -40,11 +40,11 @@ public class GuiFormattedTextField extends GuiTextField {
 		super.drawTextBox();
 
 		if (!isFocused() && isEmpty) {
-			fontRenderer.getBaseFontRenderer().drawStringWithShadow(TextFormatting.GRAY + displayTextWhenEmpty, x + 4, y + (this.getHeight() - 8) / 2, 0xE0E0E0);
+			fontRenderer.getBaseFontRenderer().drawStringWithShadow(TextFormatting.GRAY + displayTextWhenEmpty, x + 4, y + (this.getHeightWrapper() - 8) / 2, 0xE0E0E0);
 		}
 	}
 
-	private int getHeight() {
+	private int getHeightWrapper() {
 		return ((IGuiTextField) (Object) this).getHeight();
 	}
 }

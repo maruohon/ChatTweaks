@@ -96,6 +96,19 @@ public class ChatTweaksConfigPanel extends AbstractConfigPanel
     }
 
     @Override
+    public void onTick(ConfigPanelHost host)
+    {
+        if (this.selectedSubPanel != null)
+        {
+            this.selectedSubPanel.onTick(host);
+        }
+        else
+        {
+            super.onTick(host);
+        }
+    }
+
+    @Override
     public int getContentHeight()
     {
         if (this.selectedSubPanel != null)

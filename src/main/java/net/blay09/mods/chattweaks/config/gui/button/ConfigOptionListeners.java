@@ -2,6 +2,7 @@ package net.blay09.mods.chattweaks.config.gui.button;
 
 import java.util.List;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import net.blay09.mods.chattweaks.config.gui.ChatTweaksConfigPanel;
 import net.blay09.mods.chattweaks.config.gui.ConfigPanelListBase;
 import net.blay09.mods.chattweaks.config.gui.ConfigPanelSub;
@@ -88,14 +89,22 @@ public class ConfigOptionListeners
         private final List<L> list;
         private final Supplier<L> factory;
         private final int index;
+        private final ConfigOptionListenerCallback<L> callback;
 
         public ButtonListenerListAction(Type type, int index, List<L> list, Supplier<L> factory, ConfigPanelListBase<L> panel)
+        {
+            this(type, index, list, factory, panel, null);
+        }
+
+        public ButtonListenerListAction(Type type, int index, List<L> list, Supplier<L> factory,
+                ConfigPanelListBase<L> panel, @Nullable ConfigOptionListenerCallback<L> callback)
         {
             this.type = type;
             this.index = index;
             this.list = list;
             this.factory = factory;
             this.panel = panel;
+            this.callback = callback;
         }
 
         @Override
@@ -106,11 +115,22 @@ public class ConfigOptionListeners
 
             if (this.type == Type.ADD)
             {
-                list.add(this.index, this.factory.get());
+                L entry = this.factory.get();
+                list.add(this.index, entry);
+
+                if (this.callback != null)
+                {
+                    this.callback.onListAction(Type.ADD, entry);
+                }
             }
             else if (type == Type.REMOVE)
             {
-                list.remove(this.index);
+                L entry = list.remove(this.index);
+
+                if (this.callback != null)
+                {
+                    this.callback.onListAction(Type.REMOVE, entry);
+                }
             }
             else if (type == Type.MOVE_UP)
             {
