@@ -79,7 +79,6 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
         if (dirty)
         {
             Configs.save();
-            Configs.load();
         }
     }
 

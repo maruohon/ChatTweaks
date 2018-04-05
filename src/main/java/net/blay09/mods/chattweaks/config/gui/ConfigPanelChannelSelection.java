@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import com.mumfrey.liteloader.modconfig.ConfigPanelHost;
 import net.blay09.mods.chattweaks.ChatManager;
+import net.blay09.mods.chattweaks.ChatViewManager;
 import net.blay09.mods.chattweaks.chat.ChatChannel;
 import net.blay09.mods.chattweaks.chat.ChatView;
 import net.blay09.mods.chattweaks.config.options.ConfigBase;
@@ -81,6 +82,8 @@ public class ConfigPanelChannelSelection extends ConfigPanelSub
         {
             this.view.addChannel(entry.channel);
         }
+
+        ChatViewManager.save();
     }
 
     @Override

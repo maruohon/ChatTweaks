@@ -112,32 +112,24 @@ public class ConfigOptionListeners
         {
             this.panel.saveChanges();
             List<L> list = this.list;
+            L entry = null;
 
             if (this.type == Type.ADD)
             {
-                L entry = this.factory.get();
+                entry = this.factory.get();
                 list.add(this.index, entry);
-
-                if (this.callback != null)
-                {
-                    this.callback.onListAction(Type.ADD, entry);
-                }
             }
             else if (type == Type.REMOVE)
             {
-                L entry = list.remove(this.index);
-
-                if (this.callback != null)
-                {
-                    this.callback.onListAction(Type.REMOVE, entry);
-                }
+                entry = list.remove(this.index);
             }
             else if (type == Type.MOVE_UP)
             {
                 if (this.index > 0)
                 {
                     L prev = list.get(this.index - 1);
-                    list.set(this.index - 1, list.get(this.index));
+                    entry = list.get(this.index);
+                    list.set(this.index - 1, entry);
                     list.set(this.index, prev);
                 }
             }
@@ -146,9 +138,15 @@ public class ConfigOptionListeners
                 if (this.index < list.size() - 1)
                 {
                     L next = list.get(this.index + 1);
-                    list.set(this.index + 1, list.get(this.index));
+                    entry = list.get(this.index);
+                    list.set(this.index + 1, entry);
                     list.set(this.index, next);
                 }
+            }
+
+            if (this.callback != null && entry != null)
+            {
+                this.callback.onListAction(this.type, entry);
             }
 
             this.panel.reCreateOptions();

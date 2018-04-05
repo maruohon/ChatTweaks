@@ -9,10 +9,8 @@ import net.blay09.mods.chattweaks.ChatViewManager;
 import net.blay09.mods.chattweaks.chat.ChatChannel;
 import net.blay09.mods.chattweaks.chat.ChatView;
 import net.blay09.mods.chattweaks.chat.MessageStyle;
-import net.blay09.mods.chattweaks.config.gui.button.ButtonBase;
 import net.blay09.mods.chattweaks.config.gui.button.ButtonGeneric;
 import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ButtonListenerPanelSelection;
-import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ConfigOptionListenerDirtyChecker;
 import net.blay09.mods.chattweaks.config.options.ConfigBase;
 import net.blay09.mods.chattweaks.config.options.ConfigBoolean;
 import net.blay09.mods.chattweaks.config.options.ConfigOptionList;
@@ -24,7 +22,6 @@ import net.minecraft.util.text.TextFormatting;
 public class ConfigPanelViewSettings extends ConfigPanelSub
 {
     private final ChatView view;
-    private final ConfigOptionListenerDirtyChecker<ButtonBase> listenerDirtyChecker = new ConfigOptionListenerDirtyChecker<>();
     private ConfigBoolean exclusive;
     private ConfigBoolean muted;
     private ConfigString name;
@@ -72,10 +69,10 @@ public class ConfigPanelViewSettings extends ConfigPanelSub
     {
         boolean dirty = false;
 
-        if (this.listenerDirtyChecker.isDirty())
+        if (this.getButtonListener().isDirty())
         {
             dirty = true;
-            this.listenerDirtyChecker.resetDirty();
+            this.getButtonListener().resetDirty();
         }
 
         // This reads the textField contents back to the ConfigBase instances
@@ -98,7 +95,6 @@ public class ConfigPanelViewSettings extends ConfigPanelSub
         if (dirty)
         {
             ChatViewManager.save();
-            ChatViewManager.load();
         }
     }
 

@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mumfrey.liteloader.core.LiteLoader;
-import net.blay09.mods.chattweaks.ChatViewManager;
 import net.blay09.mods.chattweaks.LiteModChatTweaks;
 import net.blay09.mods.chattweaks.chat.emotes.EmoteRegistry;
 import net.blay09.mods.chattweaks.chat.emotes.LocalEmotes;
@@ -168,8 +167,6 @@ public class Configs
                     LiteModChatTweaks.logger.warn("Failed to close config file", e);
                 }
             }
-
-            ChatViewManager.save();
         }
     }
 

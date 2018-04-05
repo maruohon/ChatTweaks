@@ -6,7 +6,9 @@ import java.util.function.Supplier;
 import net.blay09.mods.chattweaks.ChatViewManager;
 import net.blay09.mods.chattweaks.chat.ChatView;
 import net.blay09.mods.chattweaks.config.gui.button.ButtonGeneric;
+import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListenerCallback;
 import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ButtonListenerListAction;
+import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ButtonListenerListAction.Type;
 import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ButtonListenerPanelSelection;
 import net.minecraft.util.text.TextFormatting;
 
@@ -20,6 +22,7 @@ public class ConfigPanelViews extends ConfigPanelListBase<ChatView>
             return new ChatView("new view");
         }
     };
+
     private final List<ChatView> list = new ArrayList<>();
 
     public ConfigPanelViews(ChatTweaksConfigPanel parent)
@@ -43,48 +46,13 @@ public class ConfigPanelViews extends ConfigPanelListBase<ChatView>
     }
 
     @Override
-    public void reCreateOptions()
-    {
-        ChatViewManager.removeAllChatViews();
-
-        for (ChatView view : this.list)
-        {
-            if (ChatViewManager.getChatView(view.getName()) != null)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.append(view.getName()).append("-");
-
-                for (int i = 0; i < 128; i++)
-                {
-                    String newName = sb.toString();
-
-                    if (ChatViewManager.getChatView(newName) == null)
-                    {
-                        view.setName(newName);
-                        ChatViewManager.addChatView(view);
-                        break;
-                    }
-
-                    sb.append("-");
-                }
-            }
-            else
-            {
-                ChatViewManager.addChatView(view);
-            }
-        }
-
-        super.reCreateOptions();
-    }
-
-    @Override
     public void saveChanges()
     {
     }
 
     protected ButtonListenerListAction<ButtonGeneric, ChatView> createActionListener(ButtonListenerListAction.Type type, int index)
     {
-        return new ButtonListenerListAction<>(type, index, this.list, ENTRY_FACTORY, this);
+        return new ButtonListenerListAction<>(type, index, this.list, ENTRY_FACTORY, this, new ViewCallback(this));
     }
 
     @Override
@@ -97,6 +65,68 @@ public class ConfigPanelViews extends ConfigPanelListBase<ChatView>
             ConfigPanelSub panelViewSettings = new ConfigPanelViewSettings(this.parentPanel, this, view);
             ButtonListenerPanelSelection<ButtonGeneric> listener = new ButtonListenerPanelSelection<>(this.parentPanel, panelViewSettings);
             this.addButton(new ButtonGeneric(index, x, y, 360, 20, label), listener);
+        }
+    }
+
+    private static class ViewCallback implements ConfigOptionListenerCallback<ChatView>
+    {
+        private final ConfigPanelViews panel;
+
+        public ViewCallback(ConfigPanelViews panel)
+        {
+            this.panel = panel;
+        }
+
+        @Override
+        public void onListAction(ButtonListenerListAction.Type action, ChatView view)
+        {
+            if (view != null)
+            {
+                if (action == Type.ADD)
+                {
+                    if (ChatViewManager.getChatView(view.getName()) != null)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(view.getName()).append("-");
+
+                        for (int i = 0; i < 128; i++)
+                        {
+                            String newName = sb.toString();
+
+                            if (ChatViewManager.getChatView(newName) == null)
+                            {
+                                view.setName(newName);
+                                ChatViewManager.addChatView(view);
+                                break;
+                            }
+
+                            sb.append("-");
+                        }
+                    }
+                    else
+                    {
+                        ChatViewManager.addChatView(view);
+                    }
+
+                    ChatViewManager.save();
+                }
+                else if (action == Type.REMOVE)
+                {
+                    ChatViewManager.removeChatView(view);
+                    ChatViewManager.save();
+                }
+                else if (action == Type.MOVE_DOWN || action == Type.MOVE_UP)
+                {
+                    ChatViewManager.removeAllChatViews();
+
+                    for (ChatView v : this.panel.getList())
+                    {
+                        ChatViewManager.addChatView(v);
+                    }
+
+                    ChatViewManager.save();
+                }
+            }
         }
     }
 }

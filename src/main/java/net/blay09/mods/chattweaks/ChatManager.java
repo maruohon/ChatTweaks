@@ -46,6 +46,9 @@ public class ChatManager {
 		if(message.getTextComponent() instanceof TextComponentTranslation) {
 			String key = ((TextComponentTranslation) message.getTextComponent()).getKey();
 			if(!key.equals("chat.type.text") && !key.equals("chat.type.emote")) {
+				if(key.startsWith("death.")) {
+					return deathChannel;
+				}
 				for(String s : systemLang) {
 					if(key.equals(s)) {
 						return systemChannel;
@@ -55,9 +58,6 @@ public class ChatManager {
 					if(key.equals(s)) {
 						return interactionChannel;
 					}
-				}
-				if(key.startsWith("death.")) {
-					return deathChannel;
 				}
 			}
 		}
@@ -102,5 +102,4 @@ public class ChatManager {
 	public static int getNextMessageId() {
 		return chatLineCounter.incrementAndGet();
 	}
-
 }
