@@ -34,7 +34,7 @@ public class ConfigColor extends ConfigBase
     public void setValue(String value)
     {
         this.hexString = value;
-        this.color = getColor(defaultValue, 0);
+        this.color = getColor(value, 0);
     }
 
     @Override
