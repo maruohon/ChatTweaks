@@ -20,6 +20,7 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.liteloader'
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'maven'
 
 ext.configFile = file "build.properties"
 
@@ -51,7 +52,7 @@ sourceSets {
     }
 }
 
-group = config.group + config.mod_id // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = config.group + "." + config.mod_id // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = config.mod_id + '-' + config.minecraft_version_out
 version = project.minecraft.mod_version
 
@@ -119,6 +120,29 @@ processResources
       
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
+        exclude 'litemod.json'
         exclude 'mcmod.info'
     }
 }
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    // This classifier is standard and should not be changed
+    classifier = 'deobf'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.java
+
+    // Don't append a 'mod-' filename prefix >_>
+    baseName = archivesBaseName
+
+    // This classifier is standard and should not be changed
+    classifier = 'source'
+}
+
+artifacts {
+    archives deobfJar
+    //archives sourcesJar
+}
+
