@@ -41,7 +41,7 @@ public class ConfigBoolean extends ConfigBase
     @Override
     public void setValueFromString(String value)
     {
-        this.value = Boolean.getBoolean(value);
+        this.value = Boolean.parseBoolean(value);
     }
 
     @Override
