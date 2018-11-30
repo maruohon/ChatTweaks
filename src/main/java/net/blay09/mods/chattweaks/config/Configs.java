@@ -265,7 +265,7 @@ public class Configs
             }
 
             try {
-                new LocalEmotes(new File(Minecraft.getMinecraft().mcDataDir, "chattweaks/emotes/"));
+                new LocalEmotes(new File(Minecraft.getMinecraft().gameDir, "chattweaks/emotes/"));
             } catch (Exception e) {
                 LiteModChatTweaks.logger.error("Failed to load local emotes: ", e);
             }

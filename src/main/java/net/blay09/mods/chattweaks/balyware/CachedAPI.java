@@ -81,7 +81,7 @@ public class CachedAPI {
 	}
 
 	public static File getCacheDirectory() {
-		File file = new File(Minecraft.getMinecraft().mcDataDir, "ChatTweaks/cache/");
+		File file = new File(Minecraft.getMinecraft().gameDir, "ChatTweaks/cache/");
 		if(!file.exists() && !file.mkdirs()) {
 			throw new RuntimeException("Could not create cache directory for Chat Tweaks.");
 		}

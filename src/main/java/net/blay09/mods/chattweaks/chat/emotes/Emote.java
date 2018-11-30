@@ -107,7 +107,7 @@ public class Emote implements IEmote {
 		if(fileName == null) {
 			imageCacheFile = null;
 		} else {
-			imageCacheFile = new File(Minecraft.getMinecraft().mcDataDir, "chattweaks/cache/" + fileName);
+			imageCacheFile = new File(Minecraft.getMinecraft().gameDir, "chattweaks/cache/" + fileName);
 		}
 	}
 
