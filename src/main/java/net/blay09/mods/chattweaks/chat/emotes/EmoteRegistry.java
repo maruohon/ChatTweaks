@@ -7,28 +7,23 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import net.blay09.mods.chattweaks.api.event.ReloadEmotes;
+import net.blay09.mods.chattweaks.event.EventBus;
 
 public class EmoteRegistry {
 
     private static final Map<String, IEmoteGroup> groupMap = Maps.newHashMap();
-    private static final Map<String, IEmote> emoteMap = Maps.newHashMap();
+    private static final Map<String, IEmote<?>> emoteMap = Maps.newHashMap();
     private static final List<String> commonEmoteCodes = Lists.newArrayList();
-    private static final List<IEmote> regexEmotes = Lists.newArrayList();
-    private static final List<IEmote> disposalList = Lists.newArrayList();
+    private static final List<IEmote<?>> disposalList = Lists.newArrayList();
     public static boolean isLoading;
 
-    public static IEmote registerEmote(String name, IEmoteLoader loader) {
-        IEmote emote = new Emote(name, loader, false);
+    public static <T> IEmote<T> registerEmote(String name, IEmoteSource<T> source, T data) {
+        IEmote<T> emote = new Emote<>(name, source, data);
         emoteMap.put(emote.getCode(), emote);
-        if(loader.isCommonEmote(name)) {
+        if (source.isCommonEmote(emote)) {
             commonEmoteCodes.add(name);
         }
-        return emote;
-    }
-
-    public static IEmote registerRegexEmote(String regex, IEmoteLoader loader) {
-        IEmote emote = new Emote(regex, loader, true);
-        regexEmotes.add(emote);
         return emote;
     }
 
@@ -38,9 +33,17 @@ public class EmoteRegistry {
         return group;
     }
 
+    public static void discardEmoteGroup(IEmoteGroup group) {
+        for (IEmote<?> emote : group.getEmotes()) {
+            emoteMap.remove(emote.getCode());
+            commonEmoteCodes.remove(emote.getCode());
+        }
+        groupMap.remove(group.getName());
+    }
+
     @Nullable
     public static IEmoteGroup getFirstGroup() {
-        if(isLoading) {
+        if (isLoading) {
             return null;
         }
         return groupMap.values().iterator().next();
@@ -48,15 +51,15 @@ public class EmoteRegistry {
 
     @Nullable
     public static IEmoteGroup getGroup(String name) {
-        if(isLoading) {
+        if (isLoading) {
             return null;
         }
         return groupMap.get(name);
     }
 
     @Nullable
-    public static IEmote fromName(String name) {
-        if(isLoading) {
+    public static IEmote<?> fromName(String name) {
+        if (isLoading) {
             return null;
         }
         return emoteMap.get(name);
@@ -65,18 +68,15 @@ public class EmoteRegistry {
     public static void reloadEmoticons() {
         synchronized (disposalList) {
             disposalList.addAll(emoteMap.values());
-            disposalList.addAll(regexEmotes);
         }
         emoteMap.clear();
-        regexEmotes.clear();
-        // TODO LiteLoader port
-        //MinecraftForge.EVENT_BUS.post(new ReloadEmotes());
+        EventBus.instance().post(new ReloadEmotes());
     }
 
     public static void runDisposal() {
         synchronized (disposalList) {
             if (!disposalList.isEmpty()) {
-                for (IEmote emote : disposalList) {
+                for (IEmote<?> emote : disposalList) {
                     emote.getImage().disposeTexture();
                 }
                 disposalList.clear();
@@ -85,35 +85,28 @@ public class EmoteRegistry {
     }
 
     public static Collection<String> getCommonEmoteCodes() {
-        if(isLoading) {
+        if (isLoading) {
             return Collections.emptyList();
         }
         return commonEmoteCodes;
     }
 
     public static Collection<String> getEmoteCodes() {
-        if(isLoading) {
+        if (isLoading) {
             return Collections.emptyList();
         }
         return emoteMap.keySet();
     }
 
-    public static Collection<IEmote> getRegexEmotes() {
-        if(isLoading) {
-            return Collections.emptyList();
-        }
-        return regexEmotes;
-    }
-
-    public static Collection<IEmote> getEmotes() {
-        if(isLoading) {
+    public static Collection<IEmote<?>> getEmotes() {
+        if (isLoading) {
             return Collections.emptyList();
         }
         return emoteMap.values();
     }
 
-    public static Collection<IEmote> getEmotesByGroup(String group) {
-        if(isLoading) {
+    public static Collection<IEmote<?>> getEmotesByGroup(String group) {
+        if (isLoading) {
             return Collections.emptyList();
         }
         IEmoteGroup emoteGroup = groupMap.get(group);
@@ -124,7 +117,7 @@ public class EmoteRegistry {
     }
 
     public static boolean hasGroup(String group) {
-        if(isLoading) {
+        if (isLoading) {
             return false;
         }
         return groupMap.containsKey(group);

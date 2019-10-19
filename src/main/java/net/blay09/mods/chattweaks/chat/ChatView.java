@@ -7,21 +7,22 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.blay09.mods.chattweaks.ChatManager;
 import net.blay09.mods.chattweaks.LiteModChatTweaks;
 import net.blay09.mods.chattweaks.chat.emotes.EmoteScanner;
 import net.blay09.mods.chattweaks.chat.emotes.PositionedEmote;
 import net.blay09.mods.chattweaks.config.Configs;
 import net.blay09.mods.chattweaks.image.ChatImageEmote;
-import net.blay09.mods.chattweaks.mixin.IMixinTextComponentString;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 
 public class ChatView {
 
@@ -29,20 +30,18 @@ public class ChatView {
     public static final Pattern groupPattern = Pattern.compile("\\$(?:([0-9])|\\{([\\w])\\})");
     public static final Pattern outputFormattingPattern = Pattern.compile("(\\\\~|~[0-9abcdefkolmnr])");
     private static final EmoteScanner emoteScanner = new EmoteScanner();
-    private static final int MAX_MESSAGES = 100;
 
     private String name;
     private final List<ChatChannel> channels = Lists.newArrayList();
     private String filterPattern = "";
     private String outputFormat = "$0";
     private MessageStyle messageStyle = MessageStyle.Chat;
-    private String outgoingPrefix = "";
+    private String outgoingPrefix;
     private boolean isExclusive;
     private boolean isMuted;
 
     private Pattern compiledFilterPattern = defaultFilterPattern;
     private String builtOutputFormat = outputFormat;
-    private Matcher lastMatcher;
     private final List<ChatMessage> chatLines = Lists.newArrayList();
     private boolean hasUnread;
 
@@ -65,7 +64,7 @@ public class ChatView {
         view.setFilterPattern(jsonView.has("filterPattern") ? jsonView.get("filterPattern").getAsString() : "");
         view.setOutputFormat(jsonView.get("outputFormat").getAsString());
         view.setMessageStyle(MessageStyle.valueOf(jsonView.get("style").getAsString()));
-        view.setOutgoingPrefix(jsonView.has("outgoingPrefix") ? jsonView.get("outgoingPrefix").getAsString() : "");
+        view.setOutgoingPrefix(jsonView.has("outgoingPrefix") ? jsonView.get("outgoingPrefix").getAsString() : null);
         view.setExclusive(jsonView.get("isExclusive").getAsBoolean());
         view.setMuted(jsonView.get("isMuted").getAsBoolean());
 
@@ -107,20 +106,20 @@ public class ChatView {
     }
 
     public boolean messageMatches(String message) {
-        lastMatcher = compiledFilterPattern.matcher(message);
-        return lastMatcher.matches();
+        Matcher matcher = compiledFilterPattern.matcher(message);
+        return matcher.matches();
     }
 
     private ITextComponent subTextComponent(ITextComponent component, int startIndex, int endIndex) {
         int index = 0;
         ITextComponent result = new TextComponentString("");
-        for(ITextComponent part : component) {
+        for (ITextComponent part : component) {
             String unformatted = part.getUnformattedComponentText();
             int min = Math.max(0, startIndex - index);
             int max = Math.min(endIndex - index, unformatted.length());
-            if(unformatted.length() >= min && max > min) {
+            if (unformatted.length() >= min && max > min) {
                 String sub = unformatted.substring(min, max);
-                if(sub.length() > 0) {
+                if (sub.length() > 0) {
                     ITextComponent sibling = new TextComponentString(sub);
                     sibling.setStyle(part.getStyle());
                     result.appendSibling(sibling);
@@ -134,16 +133,21 @@ public class ChatView {
     public ChatMessage addChatLine(ChatMessage chatLine) {
         chatLine = chatLine.copy();
         chatLines.add(chatLine);
-        if (chatLines.size() > MAX_MESSAGES) {
+        if (chatLines.size() > LiteModChatTweaks.MAX_MESSAGES) {
             chatLines.remove(0);
+        }
+
+        Matcher matcher = compiledFilterPattern.matcher(chatLine.getTextComponent().getUnformattedText());
+        if (!matcher.matches()) {
+            return chatLine;
         }
 
         try {
             if (chatLine.getSender() == null) {
-                chatLine.setSender(subTextComponent(chatLine.getTextComponent(), lastMatcher.start("s"), lastMatcher.end("s")));
+                chatLine.setSender(subTextComponent(chatLine.getTextComponent(), matcher.start("s"), matcher.end("s")));
             }
             if (chatLine.getMessage() == null) {
-                chatLine.setMessage(subTextComponent(chatLine.getTextComponent(), lastMatcher.start("m"), lastMatcher.end("m")));
+                chatLine.setMessage(subTextComponent(chatLine.getTextComponent(), matcher.start("m"), matcher.end("m")));
             }
         } catch (IllegalArgumentException ignored) {
             if (chatLine.getMessage() == null) {
@@ -156,94 +160,106 @@ public class ChatView {
         if (!builtOutputFormat.equals("$0")) {
             textComponent = new TextComponentString("");
             int last = 0;
-            Matcher matcher = groupPattern.matcher(builtOutputFormat);
-            while (matcher.find()) {
-                if(matcher.start() > last) {
-                    textComponent.appendText(builtOutputFormat.substring(last, matcher.start()));
+            Matcher outputMatcher = groupPattern.matcher(builtOutputFormat);
+            while (outputMatcher.find()) {
+                if (outputMatcher.start() > last) {
+                    textComponent.appendText(builtOutputFormat.substring(last, outputMatcher.start()));
                 }
 
                 ITextComponent groupValue = null;
-                String namedGroup = matcher.group(2);
+                String namedGroup = outputMatcher.group(2);
                 if (namedGroup != null) {
                     if (namedGroup.equals("s") && chatLine.getSender() != null) {
                         groupValue = chatLine.getSender();
                     } else if (namedGroup.equals("m") && chatLine.getMessage() != null) {
                         groupValue = chatLine.getMessage();
-                    } else if(namedGroup.equals("t")) {
+                    } else if (namedGroup.equals("t")) {
                         groupValue = new TextComponentString(Configs.timestampFormat.format(new Date(chatLine.getTimestamp())));
                         groupValue.getStyle().setColor(TextFormatting.GRAY);
                     } else {
                         int groupStart = -1;
                         int groupEnd = -1;
                         try {
-                            groupStart = lastMatcher.start(namedGroup);
-                            groupEnd = lastMatcher.end(namedGroup);
-                        } catch (IllegalArgumentException ignored) {}
-                        if(groupStart != -1 && groupEnd != -1) {
+                            groupStart = matcher.start(namedGroup);
+                            groupEnd = matcher.end(namedGroup);
+                        } catch (IllegalArgumentException ignored) {
+                        }
+                        if (groupStart != -1 && groupEnd != -1) {
                             groupValue = subTextComponent(source, groupStart, groupEnd);
                         } else {
                             groupValue = chatLine.getOutputVar(namedGroup);
                         }
                     }
                 } else {
-                    int group = Integer.parseInt(matcher.group(1));
-                    if(group >= 0 && group <= lastMatcher.groupCount()) {
-                        groupValue = subTextComponent(source, lastMatcher.start(group), lastMatcher.end(group));
+                    int group = Integer.parseInt(outputMatcher.group(1));
+                    if (group >= 0 && group <= matcher.groupCount()) {
+                        groupValue = subTextComponent(source, matcher.start(group), matcher.end(group));
                     }
                 }
 
                 if (groupValue == null) {
-                    groupValue = new TextComponentString("missingno");
+                    groupValue = new TextComponentString("*");
                 }
 
-                last = matcher.end();
+                last = outputMatcher.end();
                 textComponent.appendSibling(groupValue);
             }
 
-            if(last < builtOutputFormat.length()) {
-                textComponent.appendText(builtOutputFormat.substring(last, builtOutputFormat.length()));
+            if (last < builtOutputFormat.length()) {
+                textComponent.appendText(builtOutputFormat.substring(last));
             }
         }
 
         ITextComponent newComponent = null;
         for (ITextComponent component : textComponent) {
-            if (component instanceof TextComponentString) {
-                String text = ((TextComponentString) component).getText();
-                if (text.length() > 1) {
-                    int index = 0;
-                    StringBuilder sb = new StringBuilder();
-                    List<PositionedEmote> emotes = emoteScanner.scanForEmotes(text, null);
-                    for (PositionedEmote emoteData : emotes) {
-                        if (index < emoteData.getStart()) {
-                            sb.append(text.substring(index, emoteData.getStart()));
-                        }
-                        int imageIndex = sb.length() + 1;
-                        sb.append("\u00a7*");
-                        for (int i = 0; i < emoteData.getEmote().getWidthInSpaces(); i++) {
-                            sb.append(' ');
-                        }
-                        chatLine.addImage(new ChatImageEmote(imageIndex, emoteData.getEmote()));
-                        index = emoteData.getEnd() + 1;
+            String text = component.getUnformattedComponentText();
+            String resultText = text;
+            if (text.length() > 1 && component instanceof TextComponentString) {
+                int index = 0;
+                StringBuilder sb = new StringBuilder();
+                List<PositionedEmote> emotes = emoteScanner.scanForEmotes(text, null);
+                for (PositionedEmote emoteData : emotes) {
+                    if (index < emoteData.getStart()) {
+                        sb.append(text, index, emoteData.getStart());
                     }
-                    if (index < text.length()) {
-                        sb.append(text.substring(index));
+                    int imageIndex = sb.length() + 1;
+                    sb.append("\u00a7*");
+                    for (int i = 0; i < emoteData.getEmote().getWidthInSpaces(); i++) {
+                        sb.append(' ');
                     }
-                    ((IMixinTextComponentString) component).setText(sb.toString());
+                    chatLine.addImage(new ChatImageEmote(imageIndex, emoteData.getEmote()));
+                    index = emoteData.getEnd() + 1;
                 }
-                if (text.length() > 0) {
-                    if (newComponent == null) {
-                        newComponent = new TextComponentString("");
-                        newComponent.setStyle(textComponent.getStyle().createDeepCopy());
-                    }
-                    TextComponentString copyComponent = new TextComponentString(((TextComponentString) component).getText());
+
+                if (index < text.length()) {
+                    sb.append(text.substring(index));
+                }
+
+                resultText = sb.toString();
+            }
+
+            if (text.length() > 0) {
+                if (newComponent == null) {
+                    newComponent = new TextComponentString("");
+                    newComponent.setStyle(textComponent.getStyle().createDeepCopy());
+                }
+                TextComponentString copyComponent = new TextComponentString(resultText);
+                // Guard against ugly hacks implementing createDeepCopy incorrectly, to prevent StackOverflowException
+                // https://github.com/BuildCraft/BuildCraft/blob/c6b869f6a345784a1b2c5afb79e0dd733798b150/common/buildcraft/lib/BCLibEventDist.java#L140-L171
+                if (newComponent.getStyle() == component.getStyle()) {
+                    // Simply preventing the recursive style isn't enough as they also add side-effects to a getter... just get rid of the dumb thing.
+                    newComponent.setStyle(new Style());
+                } else {
                     copyComponent.setStyle(component.getStyle());
-                    newComponent.appendSibling(copyComponent);
                 }
+                newComponent.appendSibling(copyComponent);
             }
         }
+
         if (newComponent == null) {
             newComponent = textComponent;
         }
+
         chatLine.setTextComponent(newComponent);
         return chatLine;
     }
@@ -269,7 +285,7 @@ public class ChatView {
     }
 
     public void clearChannels() {
-        channels.clear();
+        this.channels.clear();
     }
 
     public Collection<ChatChannel> getChannels() {
@@ -332,11 +348,12 @@ public class ChatView {
         this.isMuted = isMuted;
     }
 
+    @Nullable
     public String getOutgoingPrefix() {
         return outgoingPrefix;
     }
 
-    public void setOutgoingPrefix(String outgoingPrefix) {
+    public void setOutgoingPrefix(@Nullable String outgoingPrefix) {
         this.outgoingPrefix = outgoingPrefix;
     }
 
@@ -369,13 +386,13 @@ public class ChatView {
 
     public void refresh() {
         chatLines.clear();
-        for (ChatChannel chatChannel : channels) {
-            for (ChatMessage chatMessage : chatChannel.getChatMessages()) {
-                if (messageMatches(chatMessage.getTextComponent().getUnformattedText())) {
-                    addChatLine(chatMessage);
-                }
-            }
-        }
-        chatLines.sort(Comparator.comparingInt(ChatMessage::getId));
+
+        channels.stream()
+                .flatMap(it -> it.getChatMessages().stream())
+                .filter(it -> messageMatches(it.getTextComponent().getUnformattedText()))
+                .sorted(Comparator.comparingInt(ChatMessage::getId).reversed())
+                .limit(LiteModChatTweaks.MAX_MESSAGES)
+                .sorted(Comparator.comparingInt(ChatMessage::getId))
+                .forEach(this::addChatLine);
     }
 }

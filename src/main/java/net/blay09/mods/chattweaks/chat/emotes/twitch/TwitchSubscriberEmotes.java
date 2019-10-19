@@ -1,6 +1,5 @@
 package net.blay09.mods.chattweaks.chat.emotes.twitch;
 
-import java.net.URI;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,59 +7,57 @@ import java.util.regex.PatternSyntaxException;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.blay09.mods.chattweaks.api.ChatTweaksAPI;
+import net.blay09.mods.chattweaks.ChatTweaksAPI;
+import net.blay09.mods.chattweaks.chat.emotes.EmoteRegistry;
 import net.blay09.mods.chattweaks.chat.emotes.IEmote;
 import net.blay09.mods.chattweaks.chat.emotes.IEmoteGroup;
-import net.blay09.mods.chattweaks.chat.emotes.IEmoteLoader;
-import net.blay09.mods.chattweaks.reference.Reference;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.TextFormatting;
 
-public class TwitchSubscriberEmotes implements IEmoteLoader {
+public class TwitchSubscriberEmotes {
 
     private static final Pattern DEFAULT_VALIDATION_PATTERN = Pattern.compile("[a-z0-9][a-z0-9]+[A-Z0-9].*");
-    private static final String URL_TEMPLATE = "https://static-cdn.jtvnw.net/emoticons/v1/{{id}}/1.0";
 
     public TwitchSubscriberEmotes(String validationRegex) {
         JsonObject root = TwitchEmotesAPI.loadEmotes();
-        if(root != null) {
+        if (root != null) {
             Pattern validationPattern;
             try {
                 validationPattern = Pattern.compile(validationRegex);
             } catch (PatternSyntaxException e) {
                 validationPattern = DEFAULT_VALIDATION_PATTERN;
             }
+
             Map<Integer, IEmoteGroup> groupMap = Maps.newHashMap();
             Matcher matcher = validationPattern.matcher("");
             JsonArray jsonArray = root.getAsJsonArray("emoticons");
-            for(int i = 0; i < jsonArray.size(); i++) {
+            for (int i = 0; i < jsonArray.size(); i++) {
                 JsonObject entry = jsonArray.get(i).getAsJsonObject();
                 int emoteSet = (!entry.has("emoticon_set") || entry.get("emoticon_set").isJsonNull()) ? TwitchEmotesAPI.EMOTESET_GLOBAL : entry.get("emoticon_set").getAsInt();
-                if(emoteSet == TwitchEmotesAPI.EMOTESET_GLOBAL || emoteSet == TwitchEmotesAPI.EMOTESET_TURBO) {
+                if (emoteSet == TwitchEmotesAPI.EMOTESET_GLOBAL || emoteSet == TwitchEmotesAPI.EMOTESET_TURBO) {
                     continue;
                 }
+
                 String code = entry.get("code").getAsString();
                 matcher.reset(code);
-                if(matcher.matches()) {
+                if (matcher.matches()) {
                     int id = entry.get("id").getAsInt();
                     IEmoteGroup group = groupMap.computeIfAbsent(emoteSet, s -> ChatTweaksAPI.registerEmoteGroup("Twitch-" + s));
-                    IEmote emote = ChatTweaksAPI.registerEmote(code, this);
-                    emote.setCustomData(id);
                     String channel = TwitchEmotesAPI.getChannelForEmoteSet(emoteSet);
-                    if(channel != null) {
-                        emote.addTooltip(TextFormatting.GRAY + I18n.format(Reference.MOD_ID + ":gui.chat.tooltipEmoteChannel") + " " + channel);
-                    }
-                    emote.setImageCacheFile("twitch-" + id);
+                    TwitchChannelEmoteData emoteData = new TwitchChannelEmoteData(id, channel);
+                    IEmote<?> emote = ChatTweaksAPI.registerEmote(code, TwitchChannelEmoteSource.INSTANCE, emoteData);
                     group.addEmote(emote);
-                    TwitchEmotesAPI.registerTwitchEmote(id, emote);
+                }
+            }
+
+            for (IEmoteGroup group : groupMap.values()) {
+                if (group.getEmotes().size() < 5) {
+                    EmoteRegistry.discardEmoteGroup(group);
+                } else {
+                    for (IEmote<?> emote : group.getEmotes()) {
+                        TwitchEmotesAPI.registerTwitchEmote(((TwitchChannelEmoteData) emote.getCustomData()).getId(), emote);
+                    }
                 }
             }
         }
-    }
-
-    @Override
-    public void loadEmoteImage(IEmote emote) throws Exception {
-        ChatTweaksAPI.loadEmoteImage(emote, new URI(URL_TEMPLATE.replace("{{id}}", String.valueOf(emote.getCustomData()))));
     }
 
 }

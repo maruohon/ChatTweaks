@@ -12,7 +12,7 @@ public class AsyncEmoteLoader implements Runnable {
         return instance;
     }
 
-    private final LinkedList<IEmote> loadQueue = Lists.newLinkedList();
+    private final LinkedList<IEmote<?>> loadQueue = Lists.newLinkedList();
     private boolean running;
 
     public AsyncEmoteLoader() {
@@ -21,7 +21,7 @@ public class AsyncEmoteLoader implements Runnable {
         thread.start();
     }
 
-    public void loadAsync(IEmote emote) {
+    public void loadAsync(IEmote<?> emote) {
         synchronized(loadQueue) {
             loadQueue.push(emote);
         }
@@ -38,9 +38,10 @@ public class AsyncEmoteLoader implements Runnable {
                         if(i > 5) {
                             break;
                         }
-                        IEmote emote = loadQueue.pop();
+
+                        IEmote<?> emote = loadQueue.pop();
                         try {
-                            emote.getLoader().loadEmoteImage(emote);
+                            loadEmote(emote);
                         } catch (Exception e) {
                             LiteModChatTweaks.logger.error("Failed to load emote {}: ", emote.getCode(), e);
                         }
@@ -49,6 +50,10 @@ public class AsyncEmoteLoader implements Runnable {
                 Thread.sleep(100);
             } catch (InterruptedException ignored) {}
         }
+    }
+
+    private <T> void loadEmote(IEmote<T> emote) throws Exception {
+        emote.getSource().loadEmoteImage(emote);
     }
 
 }

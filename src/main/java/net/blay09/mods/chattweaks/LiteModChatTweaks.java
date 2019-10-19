@@ -6,16 +6,24 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.input.Keyboard;
 import com.google.common.collect.Lists;
 import com.mojang.realmsclient.dto.RealmsServer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiSleepMP;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.network.INetHandler;
+import net.minecraft.network.play.server.SPacketJoinGame;
+import net.minecraft.util.text.ITextComponent;
 import com.mumfrey.liteloader.Configurable;
 import com.mumfrey.liteloader.InitCompleteListener;
 import com.mumfrey.liteloader.JoinGameListener;
 import com.mumfrey.liteloader.LiteMod;
 import com.mumfrey.liteloader.core.LiteLoader;
 import com.mumfrey.liteloader.modconfig.ConfigPanel;
-import net.blay09.mods.chattweaks.api.ChatTweaksAPI;
 import net.blay09.mods.chattweaks.auth.AuthManager;
 import net.blay09.mods.chattweaks.chat.ChatChannel;
 import net.blay09.mods.chattweaks.chat.ChatMessage;
@@ -30,28 +38,21 @@ import net.blay09.mods.chattweaks.gui.chat.GuiNewChatExt;
 import net.blay09.mods.chattweaks.gui.chat.GuiSleepMPExt;
 import net.blay09.mods.chattweaks.handler.EmoteTabCompletionHandler;
 import net.blay09.mods.chattweaks.handler.HighlightHandler;
+import net.blay09.mods.chattweaks.handler.OpenScreenshotFolderHandler;
 import net.blay09.mods.chattweaks.mixin.IMixinGuiChat;
 import net.blay09.mods.chattweaks.mixininterfaces.IMixinGuiIngame;
 import net.blay09.mods.chattweaks.reference.Reference;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiSleepMP;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.network.INetHandler;
-import net.minecraft.network.play.server.SPacketJoinGame;
-import net.minecraft.util.text.ITextComponent;
 
 public class LiteModChatTweaks implements LiteMod, Configurable, InitCompleteListener, JoinGameListener
 {
     public static final String TEXT_FORMATTING_RGB = "\u00a7#";
     public static final String TEXT_FORMATTING_EMOTE = "\u00a7*";
+    public static final int MAX_MESSAGES = 100;
+
     public static final Logger logger = LogManager.getLogger(Reference.MOD_ID);
 
     // FIXME LiteLoader port
-    public static final KeyBinding KEY_SWITCH_CHAT_VIEW = new KeyBinding("key.chattweaks.switch_chat_view", Keyboard.KEY_C, "key.categories.chattweaks");
+    public static final KeyBinding KEY_SWITCH_CHAT_VIEW = new KeyBinding("key.chattweaks.switch_chat_view", 0, "key.categories.chattweaks");
 
     public static String configDirPath;
     private static LiteModChatTweaks instance;
@@ -99,6 +100,7 @@ public class LiteModChatTweaks implements LiteMod, Configurable, InitCompleteLis
         this.bottomChatRenderer = new BottomChatRenderer();
         EventBus.instance().register(new EmoteTabCompletionHandler());
         EventBus.instance().register(new HighlightHandler());
+        EventBus.instance().register(new OpenScreenshotFolderHandler());
 
         File configDir = new File(LiteLoader.getCommonConfigFolder(), Reference.MOD_ID);
         File cacheDir = new File(configDir, "cache");

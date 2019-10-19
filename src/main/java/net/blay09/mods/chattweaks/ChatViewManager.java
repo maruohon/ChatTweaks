@@ -114,15 +114,19 @@ public class ChatViewManager {
     }
 
     public static void addChatView(ChatView view) {
-        if(views.containsKey(view.getName())) {
-            throw new IllegalArgumentException("duplicate view " + view.getName());
+        String origName = view.getName();
+        int c = 1;
+        while (views.containsKey(view.getName())) {
+            view.setName(origName + " (" + c + ")");
+            c++;
         }
+
         views.put(view.getName(), view);
         sortedViews.add(view);
         updateNameCache();
 
         GuiScreen gui = Minecraft.getMinecraft().currentScreen;
-        if(gui instanceof GuiChatExt) {
+        if (gui instanceof GuiChatExt) {
             ((GuiChatExt) gui).updateChannelButtons();
         }
     }

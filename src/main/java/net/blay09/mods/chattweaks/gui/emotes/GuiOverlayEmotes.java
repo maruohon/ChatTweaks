@@ -3,6 +3,10 @@ package net.blay09.mods.chattweaks.gui.emotes;
 import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import com.google.common.collect.Lists;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.ResourceLocation;
 import net.blay09.mods.chattweaks.chat.emotes.EmoteRegistry;
 import net.blay09.mods.chattweaks.chat.emotes.IEmote;
 import net.blay09.mods.chattweaks.chat.emotes.IEmoteGroup;
@@ -11,10 +15,6 @@ import net.blay09.mods.chattweaks.image.renderable.ImageLoader;
 import net.blay09.mods.chattweaks.mixin.IMixinGuiChat;
 import net.blay09.mods.chattweaks.mixin.IMixinGuiScreen;
 import net.blay09.mods.chattweaks.reference.Reference;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.ResourceLocation;
 
 public class GuiOverlayEmotes {
 
@@ -139,8 +139,8 @@ public class GuiOverlayEmotes {
 
     public void displayGroup(IEmoteGroup group) {
         clear();
-        for (IEmote emote : group.getEmotes()) {
-            if (!emote.isRegex() && !ArrayUtils.contains(BANNED_EMOTES, emote.getCode())) {
+        for (IEmote<?> emote : group.getEmotes()) {
+            if (!ArrayUtils.contains(BANNED_EMOTES, emote.getCode())) {
                 GuiButtonEmote button = new GuiButtonEmote(-1, x, y, emote);
                 emoteButtons.add(button);
                 ((IMixinGuiScreen) this.parentScreen).invokeAddButton(button);
@@ -150,7 +150,7 @@ public class GuiOverlayEmotes {
     }
 
     public void mouseScrolled(int delta) {
-        final int emoteColumns = width / 22;
+        final int emoteColumns = width / 22 - 1;
         final int emoteRows = height / 16;
         if (delta > 0) {
             scrollOffset = Math.max(0, scrollOffset - emoteColumns);

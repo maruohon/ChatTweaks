@@ -1,13 +1,12 @@
 package net.blay09.mods.chattweaks.chat.emotes.twitch;
 
+import java.util.Map;
+import javax.annotation.Nullable;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.blay09.mods.chattweaks.chat.emotes.IEmote;
-import net.blay09.mods.chattweaks.balyware.CachedAPI;
 import net.minecraft.util.IntHashMap;
-
-import javax.annotation.Nullable;
-import java.util.Map;
+import net.blay09.mods.chattweaks.balyware.CachedAPI;
+import net.blay09.mods.chattweaks.chat.emotes.IEmote;
 
 public class TwitchEmotesAPI {
 
@@ -17,7 +16,7 @@ public class TwitchEmotesAPI {
     public static final int EMOTESET_TURBO = 19194;
 
     private static final IntHashMap<String> emoteSets = new IntHashMap<>();
-    private static final IntHashMap<IEmote> twitchEmotes = new IntHashMap<>();
+    private static final IntHashMap<IEmote<?>> twitchEmotes = new IntHashMap<>();
 
     public static void loadEmoteSets() throws Exception {
         JsonObject sets = CachedAPI.loadCachedAPI("https://twitchemotes.com/api_cache/v3/sets.json", "twitch_emotesets_v3.json", null);
@@ -49,12 +48,12 @@ public class TwitchEmotesAPI {
         return CachedAPI.loadCachedAPI(url, "twitch_emotes" + (sb.length() > 0 ? "-" + sb.toString() : "") + ".json", "application/vnd.twitchtv.v5+json");
     }
 
-    public static void registerTwitchEmote(int id, IEmote emote) {
+    public static void registerTwitchEmote(int id, IEmote<?> emote) {
         twitchEmotes.addKey(id, emote);
     }
 
     @Nullable
-    public static IEmote getEmoteById(int id) {
+    public static IEmote<?> getEmoteById(int id) {
         return twitchEmotes.lookup(id);
     }
 

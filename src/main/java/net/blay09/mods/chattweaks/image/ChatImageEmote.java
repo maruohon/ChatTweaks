@@ -1,19 +1,18 @@
 package net.blay09.mods.chattweaks.image;
 
-import net.blay09.mods.chattweaks.image.renderable.IAnimatedChatRenderable;
-import net.blay09.mods.chattweaks.image.renderable.IChatRenderable;
-import net.blay09.mods.chattweaks.chat.emotes.IEmote;
+import java.util.List;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
-
-import java.util.List;
+import net.blay09.mods.chattweaks.chat.emotes.IEmote;
+import net.blay09.mods.chattweaks.image.renderable.IAnimatedChatRenderable;
+import net.blay09.mods.chattweaks.image.renderable.IChatRenderable;
 
 public class ChatImageEmote extends ChatImage {
 
     private final int spaces;
-    private final IEmote emote;
+    private final IEmote<?> emote;
 
-    public ChatImageEmote(int index, IEmote emote) {
+    public ChatImageEmote(int index, IEmote<?> emote) {
         super(index);
         this.emote = emote;
         this.spaces = emote.getWidthInSpaces();

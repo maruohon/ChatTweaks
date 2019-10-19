@@ -8,14 +8,15 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.client.Minecraft;
 import com.mumfrey.liteloader.core.LiteLoader;
 import net.blay09.mods.chattweaks.LiteModChatTweaks;
 import net.blay09.mods.chattweaks.chat.emotes.EmoteRegistry;
-import net.blay09.mods.chattweaks.chat.emotes.LocalEmotes;
-import net.blay09.mods.chattweaks.chat.emotes.twitch.BTTVChannelEmotes;
-import net.blay09.mods.chattweaks.chat.emotes.twitch.BTTVEmotes;
-import net.blay09.mods.chattweaks.chat.emotes.twitch.FFZChannelEmotes;
-import net.blay09.mods.chattweaks.chat.emotes.twitch.FFZEmotes;
+import net.blay09.mods.chattweaks.chat.emotes.bttv.BTTVChannelEmotes;
+import net.blay09.mods.chattweaks.chat.emotes.bttv.BTTVEmotes;
+import net.blay09.mods.chattweaks.chat.emotes.ffz.FFZChannelEmotes;
+import net.blay09.mods.chattweaks.chat.emotes.ffz.FFZEmotes;
+import net.blay09.mods.chattweaks.chat.emotes.localfile.LocalEmotes;
 import net.blay09.mods.chattweaks.chat.emotes.twitch.TwitchEmotesAPI;
 import net.blay09.mods.chattweaks.chat.emotes.twitch.TwitchGlobalEmotes;
 import net.blay09.mods.chattweaks.chat.emotes.twitch.TwitchSubscriberEmotes;
@@ -27,7 +28,6 @@ import net.blay09.mods.chattweaks.config.options.ConfigString;
 import net.blay09.mods.chattweaks.config.options.ConfigStringList;
 import net.blay09.mods.chattweaks.reference.Reference;
 import net.blay09.mods.chattweaks.util.JsonUtils;
-import net.minecraft.client.Minecraft;
 
 public class Configs
 {
@@ -39,11 +39,13 @@ public class Configs
     {
         public static final ConfigBoolean ALTERNATE_BACKGROUND      = new ConfigBoolean("alternateBackgroundColor", true, "Should uneven lines alternate their background color for easier reading?");
         public static final ConfigBoolean CHAT_TEXT_OPACITY         = new ConfigBoolean("chatTextFullOpacity",  true, "Vanilla Minecraft makes the text in chat transparent too,\nwhen opacity is set. Set this to false to restore that behaviour.");
+        public static final ConfigBoolean DISABLE_UNDERLINES        = new ConfigBoolean("disableUnderlines",  false, "Set to true to disable underlines in all chat\nmessages, because they simply don't look good.");
         public static final ConfigBoolean EMOTE_TAB_COMPLETION      = new ConfigBoolean("emoteTabCompletion", false, "Should emotes be considered in tab completion?");
         public static final ConfigBoolean HIDE_EMOTES_MENU          = new ConfigBoolean("hideEmotesMenu", false, "Set to true to hide the emote menu button in the chat.");
         public static final ConfigBoolean HILIGHT_NAME              = new ConfigBoolean("highlightName", false, "If set to true, mentions of your Minecraft IGN will be highlighted in chat.");
         public static final ConfigStringList HILIGHT_STRINGS        = new ConfigStringList("highlightedWords", ImmutableList.of(), "List of words that are highlighted in chat.");
         public static final ConfigInteger LINE_SPACING              = new ConfigInteger("lineSpacing", 0, "Spacing between chat lines");
+        public static final ConfigStringList LOCAL_EMOTE_ALIASES    = new ConfigStringList("localEmoteAliases", ImmutableList.of(), "List of aliases for local emotes,\nin alias=filename format. Example: :hmm:=thinking.png");
         public static final ConfigBoolean PREFER_NEW_MESSAGES       = new ConfigBoolean("smartViewNavigation", true, "When navigating between views, prefer views with new messages.");
         public static final ConfigBoolean SHOW_NEW_MESSAGE_OVERLAY  = new ConfigBoolean("showNewMessages",  true, "Highlights views with new messages red even when chat is closed.");
         public static final ConfigBoolean SMALLER_EMOTES            = new ConfigBoolean("smallerEmotes", false, "Should emotes be scaled down to perfectly fit into one line?");
@@ -52,11 +54,13 @@ public class Configs
         public static final ImmutableList<ConfigBase> OPTIONS = ImmutableList.of(
                 ALTERNATE_BACKGROUND,
                 CHAT_TEXT_OPACITY,
+                DISABLE_UNDERLINES,
                 EMOTE_TAB_COMPLETION,
                 HIDE_EMOTES_MENU,
                 HILIGHT_NAME,
                 HILIGHT_STRINGS,
                 LINE_SPACING,
+                LOCAL_EMOTE_ALIASES,
                 SHOW_NEW_MESSAGE_OVERLAY,
                 PREFER_NEW_MESSAGES,
                 SMALLER_EMOTES,
@@ -75,9 +79,8 @@ public class Configs
     public static class Emotes
     {
         public static final ConfigBoolean INCLUDE_TWITCH_PRIME_EMOTES   = new ConfigBoolean("includeTwitchPrimeEmotes", true, "Should Prime emotes (ex. KappaHD) be included with the Twitch Global Emotes?");
-        public static final ConfigBoolean INCLUDE_TWITCH_SMILEYS        = new ConfigBoolean("includeTwitchSmileys", false, "Should smileys (ex. :-D) be included with the Twitch Global Emotes?");
         public static final ConfigBoolean TWITCH_GLOBAL_EMOTES          = new ConfigBoolean("twitchGlobalEmotes", true, "Should the Twitch Global emotes (ex. Kappa) be enabled?");
-        public static final ConfigBoolean TWITCH_SUBSCRIBER_EMOTES      = new ConfigBoolean("twitchSubscriberEmotes", true, "Should the Twitch Subscriber emotes (ex. geekPraise) be enabled?");
+        public static final ConfigBoolean TWITCH_SUBSCRIBER_EMOTES      = new ConfigBoolean("twitchSubscriberEmotes", true, "Should the Twitch Subscriber emotes (ex. geekPraise) be enabled?\nThis will increase the memory required by this mod!");
         public static final ConfigString TWITCH_SUBSCRIBER_EMOTE_REGEX  = new ConfigString("twitchSubscriberEmoteRegex", "[a-z0-9][a-z0-9]+[A-Z0-9].*", "The regex pattern to match for Twitch Subscriber Emotes to be included.\nBy default includes all that follow prefixCode convention.");
         public static final ConfigBoolean BTTV_EMOTES                   = new ConfigBoolean("BTTVEmotes", true, "Should the BTTV emotes (ex. AngelThump) be enabled?");
         public static final ConfigBoolean BTTV_CHANNEL_EMOTES           = new ConfigBoolean("BTTVChannelEmotes", false, "Should BTTV channel emotes be enabled?");
@@ -92,7 +95,6 @@ public class Configs
                 FFZ_EMOTES,
                 FFZ_EMOTE_CHANNELS,
                 INCLUDE_TWITCH_PRIME_EMOTES,
-                INCLUDE_TWITCH_SMILEYS,
                 TWITCH_GLOBAL_EMOTES,
                 TWITCH_SUBSCRIBER_EMOTES,
                 TWITCH_SUBSCRIBER_EMOTE_REGEX);
@@ -210,7 +212,7 @@ public class Configs
 
             try {
                 if (Emotes.TWITCH_GLOBAL_EMOTES.getValue()) {
-                    new TwitchGlobalEmotes(Emotes.INCLUDE_TWITCH_PRIME_EMOTES.getValue(), Emotes.INCLUDE_TWITCH_SMILEYS.getValue());
+                    new TwitchGlobalEmotes(Emotes.INCLUDE_TWITCH_PRIME_EMOTES.getValue());
                 }
             } catch (Exception e) {
                 LiteModChatTweaks.logger.error("Failed to load Twitch global emotes: ", e);

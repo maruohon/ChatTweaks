@@ -5,5 +5,5 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public interface IEmoteScanner {
-    List<PositionedEmote> scanForEmotes(String message, @Nullable Predicate<IEmote> emoteFilter);
+    List<PositionedEmote> scanForEmotes(String message, @Nullable Predicate<IEmote<?>> emoteFilter);
 }

@@ -5,6 +5,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiNewChat;
+import net.minecraft.client.gui.GuiUtilRenderComponents;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.blay09.mods.chattweaks.ChatManager;
 import net.blay09.mods.chattweaks.ChatViewManager;
 import net.blay09.mods.chattweaks.LiteModChatTweaks;
@@ -17,16 +27,6 @@ import net.blay09.mods.chattweaks.chat.emotes.EmoteRegistry;
 import net.blay09.mods.chattweaks.config.Configs;
 import net.blay09.mods.chattweaks.image.ChatImage;
 import net.blay09.mods.chattweaks.mixin.IMixinGuiNewChat;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiNewChat;
-import net.minecraft.client.gui.GuiUtilRenderComponents;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 
 public class GuiNewChatExt extends GuiNewChat {
 
@@ -51,6 +51,7 @@ public class GuiNewChatExt extends GuiNewChat {
     }
 
     private static final Pattern FORMATTING_CODE_PATTERN = Pattern.compile("(?i)\u00a7[0-9A-FK-OR#]");
+    private static final Pattern UNDERLINE_CODE_PATTERN = Pattern.compile("(?i)\u00a7n");
     private static final Pattern EMOTE_PATTERN = Pattern.compile("\u00a7\\*");
     private static final Pattern CUSTOM_FORMATTING_CODE_PATTERN = Pattern.compile("\u00a7([#*])");
 
@@ -77,8 +78,13 @@ public class GuiNewChatExt extends GuiNewChat {
     public void addChatMessage(ChatMessage message, ChatChannel channel) {
         channel.addChatMessage(message);
         List<ChatView> views = ChatViewManager.findChatViews(message, channel);
+        boolean hasReadMessage = views.contains(ChatViewManager.getActiveView());
         for (ChatView view : views) {
-            addChatMessageForDisplay(view.addChatLine(message), view);
+            ChatMessage viewMessage = view.addChatLine(message);
+            if (!hasReadMessage && view.getMessageStyle() == MessageStyle.Chat) {
+                view.markAsUnread(true);
+            }
+            addChatMessageForDisplay(viewMessage, view);
         }
     }
 
@@ -101,7 +107,12 @@ public class GuiNewChatExt extends GuiNewChat {
                         this.setIsScrolledAccessor(true);
                         this.scroll(1);
                     }
+
                     String formattedText = chatLine.getFormattedText();
+                    if (Configs.Generic.DISABLE_UNDERLINES.getValue()) {
+                        formattedText = UNDERLINE_CODE_PATTERN.matcher(formattedText).replaceAll("");
+                    }
+
                     Matcher splitMatcher = CUSTOM_FORMATTING_CODE_PATTERN.matcher(formattedText);
                     List<TextRenderRegion> regions = Lists.newArrayList();
                     int lastIdx = 0;
@@ -132,7 +143,7 @@ public class GuiNewChatExt extends GuiNewChat {
                     }
                     this.wrappedChatLines.add(0, new WrappedChatLine(mc.ingameGUI.getUpdateCounter(), chatMessage, chatLine, cleanText, regions, images, alternateBackground));
                 }
-                while (this.wrappedChatLines.size() > 100) {
+                while (this.wrappedChatLines.size() > LiteModChatTweaks.MAX_MESSAGES) {
                     this.wrappedChatLines.remove(this.wrappedChatLines.size() - 1);
                 }
                 alternateBackground = !alternateBackground;

@@ -1,18 +1,18 @@
 package net.blay09.mods.chattweaks.gui.emotes;
 
-import net.blay09.mods.chattweaks.chat.emotes.IEmote;
-import net.blay09.mods.chattweaks.image.renderable.IAnimatedChatRenderable;
-import net.blay09.mods.chattweaks.image.renderable.IChatRenderable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
+import net.blay09.mods.chattweaks.chat.emotes.IEmote;
+import net.blay09.mods.chattweaks.image.renderable.IAnimatedChatRenderable;
+import net.blay09.mods.chattweaks.image.renderable.IChatRenderable;
 
 public class GuiButtonEmote extends GuiButton {
 
-    private final IEmote emote;
+    private final IEmote<?> emote;
 
-    public GuiButtonEmote(int buttonId, int x, int y, IEmote emote) {
+    public GuiButtonEmote(int buttonId, int x, int y, IEmote<?> emote) {
         super(buttonId, x, y, 22, 16, "");
         this.emote = emote;
         this.visible = false;
@@ -47,7 +47,7 @@ public class GuiButtonEmote extends GuiButton {
         }
     }
 
-    public IEmote getEmote() {
+    public IEmote<?> getEmote() {
         return emote;
     }
 }
