@@ -4,16 +4,16 @@ import net.minecraft.util.text.ITextComponent;
 
 public class ChatComponentClickEvent extends Event
 {
-	private final ITextComponent component;
+    private final ITextComponent component;
 
-	public ChatComponentClickEvent(ITextComponent component)
-	{
-		super(true);
-		this.component = component;
-	}
+    public ChatComponentClickEvent(ITextComponent component)
+    {
+        super(true);
+        this.component = component;
+    }
 
-	public ITextComponent getComponent()
-	{
-		return component;
-	}
+    public ITextComponent getComponent()
+    {
+        return component;
+    }
 }

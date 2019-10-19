@@ -4,14 +4,14 @@ import java.util.Collections;
 import java.util.List;
 
 public interface ITooltipProvider {
-	List<String> getTooltip();
+    List<String> getTooltip();
 
-	class EmptyTooltip implements ITooltipProvider{
-		@Override
-		public List<String> getTooltip() {
-			return Collections.emptyList();
-		}
-	}
+    class EmptyTooltip implements ITooltipProvider{
+        @Override
+        public List<String> getTooltip() {
+            return Collections.emptyList();
+        }
+    }
 
-	EmptyTooltip EMPTY = new EmptyTooltip();
+    EmptyTooltip EMPTY = new EmptyTooltip();
 }

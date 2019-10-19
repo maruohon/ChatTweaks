@@ -13,43 +13,43 @@ import javax.annotation.Nullable;
  */
 public class FormattedFontRenderer extends FontRenderer {
 
-	private static final ResourceLocation texture = new ResourceLocation("textures/font/ascii.png");
+    private static final ResourceLocation texture = new ResourceLocation("textures/font/ascii.png");
 
-	private final FontRenderer baseFontRenderer;
-	private final IStringFormatter formatter;
+    private final FontRenderer baseFontRenderer;
+    private final IStringFormatter formatter;
 
-	private String lastText;
-	private String lastFormattedText;
-	private boolean isVisible;
+    private String lastText;
+    private String lastFormattedText;
+    private boolean isVisible;
 
-	public FormattedFontRenderer(Minecraft mc, FontRenderer fontRenderer, IStringFormatter formatter) {
-		super(mc.gameSettings, texture, mc.getTextureManager(), fontRenderer.getUnicodeFlag());
-		setBidiFlag(fontRenderer.getBidiFlag());
-		this.baseFontRenderer = fontRenderer;
-		this.formatter = formatter;
-		onResourceManagerReload(mc.getResourceManager());
-	}
+    public FormattedFontRenderer(Minecraft mc, FontRenderer fontRenderer, IStringFormatter formatter) {
+        super(mc.gameSettings, texture, mc.getTextureManager(), fontRenderer.getUnicodeFlag());
+        setBidiFlag(fontRenderer.getBidiFlag());
+        this.baseFontRenderer = fontRenderer;
+        this.formatter = formatter;
+        onResourceManagerReload(mc.getResourceManager());
+    }
 
-	@Override
-	public int drawString(@Nullable String text, float x, float y, int color, boolean dropShadow) {
-		if(!isVisible) {
-			return 0;
-		}
-		if(text != null && !text.equals("_")) {
-			if(!text.equals(lastText)) {
-				lastFormattedText = formatter.applyFormatting(text);
-				lastText = text;
-			}
-			text = lastFormattedText;
-		}
-		return super.drawString(text, x, y, color, dropShadow);
-	}
+    @Override
+    public int drawString(@Nullable String text, float x, float y, int color, boolean dropShadow) {
+        if(!isVisible) {
+            return 0;
+        }
+        if(text != null && !text.equals("_")) {
+            if(!text.equals(lastText)) {
+                lastFormattedText = formatter.applyFormatting(text);
+                lastText = text;
+            }
+            text = lastFormattedText;
+        }
+        return super.drawString(text, x, y, color, dropShadow);
+    }
 
-	public FontRenderer getBaseFontRenderer() {
-		return baseFontRenderer;
-	}
+    public FontRenderer getBaseFontRenderer() {
+        return baseFontRenderer;
+    }
 
-	public void setVisible(boolean visible) {
-		isVisible = visible;
-	}
+    public void setVisible(boolean visible) {
+        isVisible = visible;
+    }
 }

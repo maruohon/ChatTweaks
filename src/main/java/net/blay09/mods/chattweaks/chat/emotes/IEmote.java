@@ -9,32 +9,32 @@ import java.util.regex.Pattern;
 
 public interface IEmote {
 
-	Object getCustomData();
+    Object getCustomData();
 
-	void setCustomData(Object customData);
+    void setCustomData(Object customData);
 
-	List<String> getTooltip();
+    List<String> getTooltip();
 
-	void addTooltip(String... tooltip);
+    void addTooltip(String... tooltip);
 
-	String getCode();
+    String getCode();
 
-	Pattern getPattern();
+    Pattern getPattern();
 
-	IEmoteLoader getLoader();
+    IEmoteLoader getLoader();
 
-	IChatRenderable getImage();
+    IChatRenderable getImage();
 
-	void setImage(IChatRenderable image);
+    void setImage(IChatRenderable image);
 
-	int getWidthInSpaces();
+    int getWidthInSpaces();
 
-	void requestLoad();
+    void requestLoad();
 
-	void setImageCacheFile(String fileName);
+    void setImageCacheFile(String fileName);
 
-	@Nullable
-	File getImageCacheFile();
+    @Nullable
+    File getImageCacheFile();
 
-	boolean isRegex();
+    boolean isRegex();
 }

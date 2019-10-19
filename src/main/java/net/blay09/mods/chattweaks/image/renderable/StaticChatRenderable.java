@@ -14,101 +14,101 @@ public class StaticChatRenderable implements IChatRenderable {
     private int textureId = -1;
 
     protected int width;
-	protected int height;
-	protected float scale = 1f;
-	protected BufferedImage loadBuffer;
-	protected int minWidthInSpaces = 4;
+    protected int height;
+    protected float scale = 1f;
+    protected BufferedImage loadBuffer;
+    protected int minWidthInSpaces = 4;
 
-	protected StaticChatRenderable() {}
+    protected StaticChatRenderable() {}
 
-	public StaticChatRenderable(BufferedImage image) {
-		width = image.getWidth();
-		height = image.getHeight();
-		calculateScale();
-		loadBuffer = image;
-	}
+    public StaticChatRenderable(BufferedImage image) {
+        width = image.getWidth();
+        height = image.getHeight();
+        calculateScale();
+        loadBuffer = image;
+    }
 
-	protected void calculateScale() {
-		float renderWidth = width;
-		float renderHeight = height;
-		if(renderWidth > MAX_WIDTH) {
-			float factor = MAX_WIDTH / renderWidth;
-			renderWidth *= factor;
-			renderHeight *= factor;
-		}
-		final float maxHeight = Configs.Generic.SMALLER_EMOTES.getValue() ? MAX_HEIGHT_SMALL : MAX_HEIGHT;
-		if(renderHeight > maxHeight) {
-			float factor = maxHeight / renderHeight;
-			renderWidth *= factor;
-			renderHeight *= factor;
-		}
-		float scaleX = renderWidth / width;
-		float scaleY = renderHeight / height;
-		scale = Math.min(scaleX, scaleY);
-	}
+    protected void calculateScale() {
+        float renderWidth = width;
+        float renderHeight = height;
+        if(renderWidth > MAX_WIDTH) {
+            float factor = MAX_WIDTH / renderWidth;
+            renderWidth *= factor;
+            renderHeight *= factor;
+        }
+        final float maxHeight = Configs.Generic.SMALLER_EMOTES.getValue() ? MAX_HEIGHT_SMALL : MAX_HEIGHT;
+        if(renderHeight > maxHeight) {
+            float factor = maxHeight / renderHeight;
+            renderWidth *= factor;
+            renderHeight *= factor;
+        }
+        float scaleX = renderWidth / width;
+        float scaleY = renderHeight / height;
+        scale = Math.min(scaleX, scaleY);
+    }
 
-	@Override
+    @Override
     public int getWidthInSpaces() {
-		if(textureId == -1) {
-			return minWidthInSpaces; // Texture is not loaded yet - most emotes fit just fine into four spaces though.
-		}
+        if(textureId == -1) {
+            return minWidthInSpaces; // Texture is not loaded yet - most emotes fit just fine into four spaces though.
+        }
         return Math.max(minWidthInSpaces, (int) Math.ceil((width * scale) / (float) Minecraft.getMinecraft().fontRenderer.getCharWidth(' ')));
     }
 
-	@Override
-	public int getTextureId() {
-		if(loadBuffer != null) {
-			textureId = TextureUtil.uploadTextureImage(TextureUtil.glGenTextures(), loadBuffer);
-			loadBuffer = null;
-		}
-		return textureId;
-	}
+    @Override
+    public int getTextureId() {
+        if(loadBuffer != null) {
+            textureId = TextureUtil.uploadTextureImage(TextureUtil.glGenTextures(), loadBuffer);
+            loadBuffer = null;
+        }
+        return textureId;
+    }
 
-	@Override
-	public void disposeTexture() {
-		if(textureId != -1) {
-			TextureUtil.deleteTexture(textureId);
-			textureId = -1;
-		}
-	}
+    @Override
+    public void disposeTexture() {
+        if(textureId != -1) {
+            TextureUtil.deleteTexture(textureId);
+            textureId = -1;
+        }
+    }
 
-	@Override
+    @Override
     public int getWidth() {
         return width;
     }
 
-	@Override
+    @Override
     public int getHeight() {
         return height;
     }
 
-	@Override
+    @Override
     public float getScale() {
         return scale;
     }
 
-	@Override
-	public void setScale(float scale) {
-		this.scale = scale;
-	}
+    @Override
+    public void setScale(float scale) {
+        this.scale = scale;
+    }
 
-	@Override
-	public int getTexCoordX() {
-		return 0;
-	}
+    @Override
+    public int getTexCoordX() {
+        return 0;
+    }
 
-	@Override
-	public int getTexCoordY() {
-		return 0;
-	}
+    @Override
+    public int getTexCoordY() {
+        return 0;
+    }
 
-	@Override
-	public int getSheetWidth() {
-		return width;
-	}
+    @Override
+    public int getSheetWidth() {
+        return width;
+    }
 
-	@Override
-	public int getSheetHeight() {
-		return height;
-	}
+    @Override
+    public int getSheetHeight() {
+        return height;
+    }
 }

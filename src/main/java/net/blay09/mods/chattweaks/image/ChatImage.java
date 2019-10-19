@@ -27,9 +27,9 @@ public abstract class ChatImage {
         return 1f;
     }
 
-	public List<String> getTooltip() {
-		return Collections.emptyList();
-	}
+    public List<String> getTooltip() {
+        return Collections.emptyList();
+    }
 
     public abstract int getWidth();
     public abstract int getHeight();

@@ -9,13 +9,13 @@ import net.minecraft.command.CommandBase;
 
 public class EmoteTabCompletionHandler implements IEventHandler<TabCompletionEvent>
 {
-	@Override
-	public void onEvent(TabCompletionEvent event)
-	{
-		if (Configs.Generic.EMOTE_TAB_COMPLETION.getValue())
-		{
-			List<String> strs = CommandBase.getListOfStringsMatchingLastWord(new String[]{event.getInput()}, EmoteRegistry.getCommonEmoteCodes());
-			event.getCompletions().addAll(strs);
-		}
-	}
+    @Override
+    public void onEvent(TabCompletionEvent event)
+    {
+        if (Configs.Generic.EMOTE_TAB_COMPLETION.getValue())
+        {
+            List<String> strs = CommandBase.getListOfStringsMatchingLastWord(new String[]{event.getInput()}, EmoteRegistry.getCommonEmoteCodes());
+            event.getCompletions().addAll(strs);
+        }
+    }
 }

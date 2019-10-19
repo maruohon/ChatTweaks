@@ -7,8 +7,8 @@ package net.blay09.mods.chattweaks.api.event;
  */
 public class ReloadEmotes extends Event
 {
-	public ReloadEmotes()
-	{
-		super(false);
-	}
+    public ReloadEmotes()
+    {
+        super(false);
+    }
 }
