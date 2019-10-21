@@ -20,7 +20,7 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.liteloader'
 apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 ext.configFile = file "build.properties"
 
@@ -120,7 +120,6 @@ processResources
       
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
-        exclude 'litemod.json'
         exclude 'mcmod.info'
     }
 }
@@ -131,6 +130,7 @@ task deobfJar(type: Jar) {
     classifier = 'deobf'
 }
 
+/*
 task sourcesJar(type: Jar) {
     from sourceSets.main.java
 
@@ -140,9 +140,28 @@ task sourcesJar(type: Jar) {
     // This classifier is standard and should not be changed
     classifier = 'source'
 }
+*/
 
 artifacts {
     archives deobfJar
     //archives sourcesJar
 }
 
+tasks.publish.dependsOn build
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId project.archivesBaseName
+            from components.java
+
+            artifact deobfJar
+            artifact sourceJar
+        }
+    }
+
+    repositories {
+        maven {
+            url "$projectDir/../../CommonMaven"
+        }
+    }
+}
