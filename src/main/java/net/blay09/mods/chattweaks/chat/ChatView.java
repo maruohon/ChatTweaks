@@ -93,9 +93,13 @@ public class ChatView {
         object.addProperty("filterPattern", filterPattern);
         object.addProperty("outputFormat", outputFormat);
         object.addProperty("style", messageStyle.name());
-        object.addProperty("outgoingPrefix", outgoingPrefix);
         object.addProperty("isExclusive", isExclusive);
         object.addProperty("isMuted", isMuted);
+
+        if (this.outgoingPrefix != null)
+        {
+            object.addProperty("outgoingPrefix", this.outgoingPrefix);
+        }
 
         JsonArray channels = new JsonArray();
         for (ChatChannel channel : this.channels) {
