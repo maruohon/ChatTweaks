@@ -6,6 +6,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.lwjgl.input.Keyboard;
+import net.minecraft.client.resources.I18n;
 import com.mumfrey.liteloader.modconfig.AbstractConfigPanel;
 import com.mumfrey.liteloader.modconfig.ConfigPanelHost;
 import net.blay09.mods.chattweaks.config.Configs;
@@ -23,7 +24,6 @@ import net.blay09.mods.chattweaks.config.options.ConfigBoolean;
 import net.blay09.mods.chattweaks.config.options.ConfigOptionList;
 import net.blay09.mods.chattweaks.config.options.ConfigStringList;
 import net.blay09.mods.chattweaks.config.options.ConfigType;
-import net.minecraft.client.resources.I18n;
 
 public abstract class ConfigPanelSub extends AbstractConfigPanel
 {
@@ -35,7 +35,13 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
     private final List<ButtonEntry<?>> buttons = new ArrayList<>();
     private final List<HoverInfo> configComments = new ArrayList<>();
     private final String title;
+    private IConfigSaver configSaver = Configs::save;
     protected int nextElementY;
+
+    public interface IConfigSaver
+    {
+        void saveConfigs();
+    }
 
     public ConfigPanelSub(String title, ChatTweaksConfigPanel parent)
     {
@@ -51,6 +57,16 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
     }
 
     protected abstract Collection<ConfigBase> getConfigs();
+
+    protected IConfigSaver getConfigSaver()
+    {
+        return this.configSaver;
+    }
+
+    protected void setConfigSaver(IConfigSaver configSaver)
+    {
+        this.configSaver = configSaver;
+    }
 
     @Override
     public String getPanelTitle()
@@ -75,10 +91,19 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
         }
 
         dirty |= this.handleTextFields();
+        dirty |= this.handleStringLists();
 
         if (dirty)
         {
-            Configs.save();
+            this.saveConfigs();
+        }
+    }
+
+    protected void saveConfigs()
+    {
+        if (this.configSaver != null)
+        {
+            this.configSaver.saveConfigs();
         }
     }
 
@@ -132,6 +157,11 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
         }
 
         return dirty;
+    }
+
+    protected boolean handleStringLists()
+    {
+        return false;
     }
 
     @Override
@@ -248,19 +278,12 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
     {
         if (keyCode == Keyboard.KEY_ESCAPE)
         {
-            if (this.parentSubPanel != null)
-            {
-                this.parentPanel.setSelectedSubPanel(this.parentSubPanel);
-            }
-            else
-            {
-                this.parentPanel.setSelectedSubPanel(null);
-            }
-
-            return;
+            this.parentPanel.setSelectedSubPanel(this.parentSubPanel);
         }
-
-        super.keyPressed(host, keyChar, keyCode);
+        else
+        {
+            super.keyPressed(host, keyChar, keyCode);
+        }
     }
 
     public static class HoverInfo

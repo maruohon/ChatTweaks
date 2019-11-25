@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import org.lwjgl.input.Keyboard;
+import com.google.common.collect.ImmutableList;
 import com.mumfrey.liteloader.modconfig.ConfigPanelHost;
 import net.blay09.mods.chattweaks.config.gui.button.ButtonGeneric;
 import net.blay09.mods.chattweaks.config.gui.button.ConfigOptionListeners.ButtonListenerListAction;
@@ -21,12 +22,19 @@ public class ConfigPanelStringList extends ConfigPanelListBase<String>
     };
     private final ConfigStringList config;
     private final List<ConfigTextField> textFields = new ArrayList<>();
+    private final List<String> originalValues;
 
     public ConfigPanelStringList(ConfigStringList config, String title, ChatTweaksConfigPanel parent, ConfigPanelSub parentSub)
     {
         super(title, parent, parentSub);
 
         this.config = config;
+        this.originalValues = ImmutableList.copyOf(config.getValues());
+
+        if (parentSub != null)
+        {
+            this.setConfigSaver(parentSub.getConfigSaver());
+        }
     }
 
     @Override
@@ -41,6 +49,12 @@ public class ConfigPanelStringList extends ConfigPanelListBase<String>
         Keyboard.enableRepeatEvents(false);
 
         super.onPanelHidden();
+    }
+
+    @Override
+    protected boolean handleStringLists()
+    {
+        return this.config.getValues().equals(this.originalValues) == false;
     }
 
     @Override
