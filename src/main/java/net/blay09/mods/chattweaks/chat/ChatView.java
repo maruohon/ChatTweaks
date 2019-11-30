@@ -322,7 +322,13 @@ public class ChatView {
         Matcher matcher = outputFormattingPattern.matcher(outputFormat);
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
-            matcher.appendReplacement(sb, "\u00a7" + matcher.group(1));
+            String rep = matcher.group(1);
+
+            if (rep.length() >= 2 && rep.charAt(0) == '~')
+            {
+                rep = rep.substring(1);
+                matcher.appendReplacement(sb, "\u00a7" + rep);
+            }
         }
         matcher.appendTail(sb);
         builtOutputFormat = sb.toString();
