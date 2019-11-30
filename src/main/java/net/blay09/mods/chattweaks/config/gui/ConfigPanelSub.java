@@ -35,7 +35,12 @@ public abstract class ConfigPanelSub extends AbstractConfigPanel
     private final List<ButtonEntry<?>> buttons = new ArrayList<>();
     private final List<HoverInfo> configComments = new ArrayList<>();
     private final String title;
-    private IConfigSaver configSaver = Configs::save;
+
+    private IConfigSaver configSaver = () -> {
+        Configs.save();
+        Configs.updateConfigs();
+    };
+
     protected int nextElementY;
 
     public interface IConfigSaver

@@ -118,6 +118,11 @@ public class Configs
             }
         }
 
+        updateConfigs();
+    }
+
+    public static void updateConfigs()
+    {
         try
         {
             timestampFormat = new SimpleDateFormat(Generic.TIMESTAMP_FORMAT_STRING.getStringValue());
@@ -127,8 +132,6 @@ public class Configs
             LiteModChatTweaks.logger.error("Invalid timestamp format - reverting to default");
             timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
         }
-
-        //InputEventHandler.updateUsedKeys(); // TODO
     }
 
     public static void save()
