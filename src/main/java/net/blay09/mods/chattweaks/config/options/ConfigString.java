@@ -13,6 +13,11 @@ public class ConfigString extends ConfigBase
     {
         super(ConfigType.STRING, name, comment);
 
+        if (defaultValue == null)
+        {
+            defaultValue = "";
+        }
+
         this.defaultValue = defaultValue;
         this.value = defaultValue;
     }
@@ -29,7 +34,7 @@ public class ConfigString extends ConfigBase
 
     public void setValue(String value)
     {
-        this.value = value;
+        this.value = value != null ? value : "";
     }
 
     @Override
@@ -41,7 +46,7 @@ public class ConfigString extends ConfigBase
     @Override
     public void setValueFromString(String value)
     {
-        this.value = value;
+        this.value = value != null ? value : "";
     }
 
     @Override
@@ -51,8 +56,7 @@ public class ConfigString extends ConfigBase
         {
             if (element.isJsonPrimitive())
             {
-                JsonPrimitive primitive = element.getAsJsonPrimitive();
-                this.value = primitive.getAsString();
+                this.setValue(element.getAsJsonPrimitive().getAsString());
             }
             else
             {

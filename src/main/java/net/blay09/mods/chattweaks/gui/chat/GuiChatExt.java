@@ -10,6 +10,13 @@ import java.util.function.Function;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import com.google.common.base.Strings;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiChat;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.event.ClickEvent;
 import com.mumfrey.liteloader.client.overlays.IGuiTextField;
 import net.blay09.mods.chattweaks.ChatViewManager;
 import net.blay09.mods.chattweaks.LiteModChatTweaks;
@@ -25,13 +32,6 @@ import net.blay09.mods.chattweaks.event.EventBus;
 import net.blay09.mods.chattweaks.gui.emotes.GuiButtonEmotes;
 import net.blay09.mods.chattweaks.gui.emotes.GuiOverlayEmotes;
 import net.blay09.mods.chattweaks.mixin.IMixinGuiChat;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.event.ClickEvent;
 
 public class GuiChatExt extends GuiChat {
 
@@ -107,8 +107,9 @@ public class GuiChatExt extends GuiChat {
     @Override
     public void sendChatMessage(String message, boolean addToSentMessages) {
         ClientChatEvent event = new ClientChatEvent(message);
-        if (! Strings.isNullOrEmpty(ChatViewManager.getActiveView().getOutgoingPrefix()) && !(event.getMessage().startsWith("/") && !event.getMessage().startsWith("/me "))) {
-            event.setMessage(ChatViewManager.getActiveView().getOutgoingPrefix() + event.getMessage());
+        String prefix = ChatViewManager.getActiveView().getOutgoingPrefix();
+        if (! Strings.isNullOrEmpty(prefix) && !(event.getMessage().startsWith("/") && !event.getMessage().startsWith("/me "))) {
+            event.setMessage(prefix + event.getMessage());
         }
         String newMessage;
         if (EventBus.instance().post(event)) {
