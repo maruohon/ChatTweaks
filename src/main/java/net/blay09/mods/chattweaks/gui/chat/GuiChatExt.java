@@ -144,12 +144,26 @@ public class GuiChatExt extends GuiChat {
 
     @Override
     public void handleKeyboardInput() throws IOException {
-        // FIXME LiteLoader port
-        if (Keyboard.getEventKeyState() && LiteModChatTweaks.KEY_SWITCH_CHAT_VIEW.getKeyCode() == Keyboard.getEventKey()) {
-            ChatViewManager.setActiveView(ChatViewManager.getNextChatView(ChatViewManager.getActiveView(), Configs.Generic.PREFER_NEW_MESSAGES.getValue()));
-        } else {
-            super.handleKeyboardInput();
+        int switchKey = LiteModChatTweaks.KEY_SWITCH_CHAT_VIEW.getKeyCode();
+
+        if (Keyboard.getEventKeyState() && switchKey > 0)
+        {
+            int key = Keyboard.getEventKey();
+            char c = Keyboard.getEventCharacter();
+
+            if (key == 0 && c >= ' ')
+            {
+                key = c + 256;
+            }
+
+            if (key > 0 && key == switchKey)
+            {
+                ChatViewManager.setActiveView(ChatViewManager.getNextChatView(ChatViewManager.getActiveView(), Configs.Generic.PREFER_NEW_MESSAGES.getValue()));
+                return;
+            }
         }
+
+        super.handleKeyboardInput();
     }
 
     @Override
